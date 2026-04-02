@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import { 
   TrendingUp, 
@@ -11,11 +11,16 @@ import {
   ArrowUpRight,
   ArrowDownRight,
   Minus,
-  Download
+  Download,
+  ArrowUpCircle,
+  CheckCircle,
+  ChevronRight
 } from 'lucide-react';
 import { useMemoryStore } from '@/lib/store';
 import { memoryNodes, intentNodes } from '@/lib/data';
+import { MemoryNode, IntentNode } from '@/lib/types';
 import { cn } from '@/lib/utils';
+import Link from 'next/link';
 
 interface Insight {
   id: string;
@@ -25,6 +30,110 @@ interface Insight {
   severity: 'info' | 'warning' | 'critical';
   metric?: string;
   trend?: 'up' | 'down' | 'stable';
+}
+
+// 计算记忆系统健康评分
+function calculateHealthScore(memories: MemoryNode[], intents: IntentNode[]): string {
+  const l1Count = memories.filter(m => m.level === 'L1').length;
+  const l2Count = memories.filter(m => m.level === 'L2').length;
+  const l3Count = memories.filter(m => m.level === 'L3').length;
+  const l4Count = memories.filter(m => m.level === 'L4').length;
+  const total = memories.length;
+  
+  if (total === 0) return 'N/A';
+  
+  // 评分算法：L4和L3越多分数越高，L1过多会扣分
+  const weightedScore = (l4Count * 4 + l3Count * 3 + l2Count * 2 + l1Count) / Math.max(total, 1);
+  const balanceScore = l1Count > (l4Count + l3Count + l2Count) * 3 ? 0.7 : 1;
+  const finalScore = (weightedScore / 4) * balanceScore * 100;
+  
+  if (finalScore >= 80) return 'Excellent';
+  if (finalScore >= 60) return 'Good';
+  if (finalScore >= 40) return 'Fair';
+  return 'Needs Attention';
+}
+
+// L2/L3 候选提醒组件
+function PromotionCandidates({ memories }: { memories: MemoryNode[] }) {
+  const [expanded, setExpanded] = useState(false);
+  
+  // 找出可能可以晋升的L1记忆（有多个connections且confidence高）
+  const l1Candidates = useMemo(() => {
+    return memories
+      .filter(m => m.level === 'L1')
+      .filter(m => m.connections.length >= 2 && m.confidence >= 0.85)
+      .slice(0, 3);
+  }, [memories]);
+  
+  // 找出可能可以晋升的L2记忆
+  const l2Candidates = useMemo(() => {
+    return memories
+      .filter(m => m.level === 'L2')
+      .filter(m => m.connections.length >= 3 && m.confidence >= 0.9)
+      .slice(0, 3);
+  }, [memories]);
+  
+  const allCandidates = [...l1Candidates, ...l2Candidates];
+  
+  if (allCandidates.length === 0) return null;
+  
+  return (
+    <motion.div 
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="bg-gradient-to-r from-amber-500/10 to-yellow-500/10 border border-amber-500/20 rounded-lg p-4"
+    >
+      <div 
+        className="flex items-center justify-between cursor-pointer"
+        onClick={() => setExpanded(!expanded)}
+      >
+        <div className="flex items-center gap-3">
+          <div className="p-2 bg-amber-500/20 rounded-lg">
+            <ArrowUpCircle className="w-5 h-5 text-amber-500" />
+          </div>
+          <div>
+            <h3 className="font-semibold text-amber-400">晋升候选记忆</h3>
+            <p className="text-sm text-muted-foreground">
+              {l1Candidates.length > 0 && `${l1Candidates.length} 个L1记忆可能晋升到L2`}
+              {l1Candidates.length > 0 && l2Candidates.length > 0 && ' · '}
+              {l2Candidates.length > 0 && `${l2Candidates.length} 个L2记忆可能晋升到L3`}
+            </p>
+          </div>
+        </div>
+        <ChevronRight className={cn("w-5 h-5 transition-transform", expanded && "rotate-90")} />
+      </div>
+      
+      {expanded && (
+        <motion.div 
+          initial={{ opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: 'auto' }}
+          className="mt-4 space-y-2"
+        >
+          {allCandidates.map((memory) => (
+            <Link
+              key={memory.id}
+              href={`/memory/${memory.id}`}
+              className="flex items-center gap-3 p-3 bg-background/50 rounded-lg hover:bg-background transition-colors"
+            >
+              <div className={cn(
+                "w-2 h-2 rounded-full",
+                memory.level === 'L1' ? 'bg-cyan-400' : 'bg-amber-400'
+              )} />
+              <div className="flex-1 min-w-0">
+                <p className="font-medium truncate">{memory.title}</p>
+                <p className="text-xs text-muted-foreground">
+                  {memory.level} → {memory.level === 'L1' ? 'L2' : 'L3'} · 
+                  {memory.connections.length} 关联 · 
+                  {(memory.confidence * 100).toFixed(0)}% 置信度
+                </p>
+              </div>
+              <ArrowUpCircle className="w-4 h-4 text-muted-foreground" />
+            </Link>
+          ))}
+        </motion.div>
+      )}
+    </motion.div>
+  );
 }
 
 export function InsightsRadar({ className }: { className?: string }) {
@@ -182,27 +291,12 @@ ${i.trend ? `**Trend:** ${i.trend}` : ''}
 
   return (
     <div className={cn("space-y-6", className)}>
-      {/* Header with Export */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-bold">Insights & Analytics</h2>
-          <p className="text-muted-foreground">Auto-detected patterns and recommendations</p>
-        </div>
-        <button
-          onClick={exportInsights}
-          className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
-        >
-          <Download className="w-4 h-4" />
-          Export Report
-        </button>
-      </div>
-
-      {/* Stats Overview */}
+      {/* Stats Overview - 删除重复标题 */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <OverviewCard
           icon={<Brain className="w-4 h-4" />}
           label="Memory Health"
-          value="Good"
+          value={calculateHealthScore(memories, intents)}
           trend="up"
           color="text-memory-l3"
         />
@@ -229,6 +323,9 @@ ${i.trend ? `**Trend:** ${i.trend}` : ''}
         />
       </div>
 
+      {/* L2/L3 Promotion Candidates */}
+      <PromotionCandidates memories={memories} />
+
       {/* Insights List */}
       <div className="grid gap-4">
         {insights.map((insight, index) => (
@@ -238,7 +335,7 @@ ${i.trend ? `**Trend:** ${i.trend}` : ''}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.1 }}
             className={cn(
-              "p-4 rounded-lg border bg-card",
+              "p-4 rounded-lg border bg-card cursor-pointer hover:border-primary/50 transition-colors",
               insight.severity === 'critical' && "border-red-500/50 bg-red-500/5",
               insight.severity === 'warning' && "border-yellow-500/50 bg-yellow-500/5",
               insight.severity === 'info' && "border-blue-500/50 bg-blue-500/5"

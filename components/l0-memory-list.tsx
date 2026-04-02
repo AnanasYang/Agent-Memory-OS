@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useMemoryStore } from '@/lib/store';
 import { L0Memory, SessionMessage } from '@/lib/types';
@@ -13,7 +13,10 @@ import {
   ChevronRight, 
   RefreshCw, 
   AlertCircle,
-  Zap
+  Zap,
+  Filter,
+  Bot,
+  X
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { 
@@ -48,6 +51,10 @@ export function L0MemoryList({ className, compact = false }: L0MemoryListProps) 
   const [isLoadingDetail, setIsLoadingDetail] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [autoRefresh, setAutoRefresh] = useState(true);
+  
+  // 消息筛选状态
+  const [roleFilter, setRoleFilter] = useState<'all' | 'user' | 'assistant'>('all');
+  const [searchQuery, setSearchQuery] = useState('');
 
   // Fetch L0 memories on mount
   useEffect(() => {
@@ -55,9 +62,8 @@ export function L0MemoryList({ className, compact = false }: L0MemoryListProps) 
   }, [fetchL0Memories]);
 
   // 使用文件监听自动刷新
-  const { connected: watcherConnected, lastEvent } = useFileWatcher({
+  const { connected: watcherConnected } = useFileWatcher({
     onFileChange: (event) => {
-      // 当 L0 层有新文件时自动刷新
       if (event.level === 'L0' && autoRefresh) {
         console.log('[L0MemoryList] Detected L0 file change, refreshing...');
         fetchL0Memories();
@@ -69,6 +75,8 @@ export function L0MemoryList({ className, compact = false }: L0MemoryListProps) 
     setSelectedSession(session);
     setDialogOpen(true);
     setIsLoadingDetail(true);
+    setRoleFilter('all'); // 重置筛选
+    setSearchQuery('');
     
     const detail = await fetchL0SessionDetail(session.sessionId);
     
@@ -83,6 +91,18 @@ export function L0MemoryList({ className, compact = false }: L0MemoryListProps) 
     
     setIsLoadingDetail(false);
   };
+
+  // 筛选消息
+  const filteredMessages = useMemo(() => {
+    if (!sessionDetail?.messages) return [];
+    
+    return sessionDetail.messages.filter(msg => {
+      const matchesRole = roleFilter === 'all' || msg.role === roleFilter;
+      const matchesSearch = !searchQuery || 
+        msg.content.toLowerCase().includes(searchQuery.toLowerCase());
+      return matchesRole && matchesSearch;
+    });
+  }, [sessionDetail?.messages, roleFilter, searchQuery]);
 
   const formatTime = (timestamp: number) => {
     const date = new Date(timestamp);
@@ -223,14 +243,14 @@ export function L0MemoryList({ className, compact = false }: L0MemoryListProps) 
 
       {/* Session Detail Dialog */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="max-w-2xl max-h-[80vh] p-0 overflow-hidden">
+        <DialogContent className="max-w-3xl max-h-[85vh] p-0 overflow-hidden">
           <DialogHeader className="p-6 border-b">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center">
                 <MessageSquare className="w-5 h-5 text-blue-400" />
               </div>
-              <div>
-                <DialogTitle className="text-lg">
+              <div className="flex-1 min-w-0">
+                <DialogTitle className="text-lg truncate">
                   与 {selectedSession?.userName || '未知用户'} 的会话
                 </DialogTitle>
                 <DialogDescription className="text-xs">
@@ -240,7 +260,84 @@ export function L0MemoryList({ className, compact = false }: L0MemoryListProps) 
             </div>
           </DialogHeader>
 
-          <div className="overflow-y-auto max-h-[60vh]">
+          {/* Filter Bar */}
+          {sessionDetail && (
+            <div className="px-6 py-3 border-b bg-muted/30">
+              <div className="flex flex-wrap items-center gap-3">
+                {/* Role Filter */}
+                <div className="flex items-center gap-2">
+                  <Filter className="w-3 h-3 text-muted-foreground" />
+                  <span className="text-xs text-muted-foreground">筛选:</span>
+                  <div className="flex gap-1">
+                    <button
+                      onClick={() => setRoleFilter('all')}
+                      className={cn(
+                        "px-2 py-1 text-xs rounded-full transition-colors",
+                        roleFilter === 'all'
+                          ? "bg-primary text-primary-foreground"
+                          : "bg-muted hover:bg-muted/80"
+                      )}
+                    >
+                      全部
+                    </button>
+                    <button
+                      onClick={() => setRoleFilter('user')}
+                      className={cn(
+                        "px-2 py-1 text-xs rounded-full transition-colors flex items-center gap-1",
+                        roleFilter === 'user'
+                          ? "bg-blue-500 text-white"
+                          : "bg-muted hover:bg-muted/80"
+                      )}
+                    >
+                      <User className="w-3 h-3" />
+                      用户
+                    </button>
+                    <button
+                      onClick={() => setRoleFilter('assistant')}
+                      className={cn(
+                        "px-2 py-1 text-xs rounded-full transition-colors flex items-center gap-1",
+                        roleFilter === 'assistant'
+                          ? "bg-purple-500 text-white"
+                          : "bg-muted hover:bg-muted/80"
+                      )}
+                    >
+                      <Bot className="w-3 h-3" />
+                      AI
+                    </button>
+                  </div>
+                </div>
+                
+                {/* Search */}
+                <div className="flex-1 min-w-[150px]">
+                  <div className="relative">
+                    <input
+                      type="text"
+                      placeholder="搜索消息内容..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="w-full pl-8 pr-8 py-1.5 text-xs bg-background border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                    />
+                    <MessageSquare className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3 h-3 text-muted-foreground" />
+                    {searchQuery && (
+                      <button
+                        onClick={() => setSearchQuery('')}
+                        className="absolute right-2 top-1/2 -translate-y-1/2"
+                      >
+                        <X className="w-3 h-3 text-muted-foreground hover:text-foreground" />
+                      </button>
+                    )}
+                  </div>
+                </div>
+                
+                {/* Message Count */}
+                <span className="text-xs text-muted-foreground">
+                  {filteredMessages.length} / {sessionDetail.messages.length} 条
+                </span>
+              </div>
+            </div>
+          )}
+
+          <div className="overflow-y-auto max-h-[50vh]">
             <div className="p-6 space-y-4">
               {/* Loading state */}
               {isLoadingDetail && (
@@ -251,9 +348,12 @@ export function L0MemoryList({ className, compact = false }: L0MemoryListProps) 
               )}
 
               {/* Messages */}
-              {!isLoadingDetail && sessionDetail?.messages.map((msg, idx) => (
-                <div 
+              {!isLoadingDetail && filteredMessages.map((msg, idx) => (
+                <motion.div 
                   key={idx}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: idx * 0.03 }}
                   className={cn(
                     "flex gap-3",
                     msg.role === 'user' ? "flex-row" : "flex-row-reverse"
@@ -268,21 +368,30 @@ export function L0MemoryList({ className, compact = false }: L0MemoryListProps) 
                     {msg.role === 'user' ? 'U' : 'AI'}
                   </div>
                   <div className={cn(
-                    "flex-1 p-3 rounded-lg text-sm max-w-[80%]",
+                    "flex-1 p-3 rounded-lg text-sm max-w-[85%]",
                     msg.role === 'user'
                       ? "bg-blue-500/10 border border-blue-500/20"
                       : "bg-muted border border-border"
                   )}>
                     <p className="whitespace-pre-wrap">{msg.content}</p>
+                    {msg.timestamp && (
+                      <p className="text-[10px] text-muted-foreground mt-2">
+                        {new Date(msg.timestamp).toLocaleTimeString('zh-CN')}
+                      </p>
+                    )}
                   </div>
-                </div>
+                </motion.div>
               ))}
 
               {/* Empty state */}
-              {!isLoadingDetail && (!sessionDetail?.messages || sessionDetail.messages.length === 0) && (
+              {!isLoadingDetail && filteredMessages.length === 0 && (
                 <div className="text-center py-8 text-muted-foreground">
                   <MessageSquare className="w-12 h-12 mx-auto mb-3 opacity-30" />
-                  <p className="text-sm">暂无消息记录</p>
+                  <p className="text-sm">
+                    {searchQuery || roleFilter !== 'all' 
+                      ? '没有匹配的消息' 
+                      : '暂无消息记录'}
+                  </p>
                 </div>
               )}
             </div>

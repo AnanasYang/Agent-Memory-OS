@@ -1,15 +1,13 @@
 import { NextResponse } from 'next/server';
-import { execSync } from 'child_process';
-import { readFileSync } from 'fs';
+import { readFileSync, readdirSync, existsSync } from 'fs';
+import { join } from 'path';
 
-interface OpenClawSession {
-  key: string;
-  sessionId: string;
-  displayName: string;
-  updatedAt: number;
-  transcriptPath?: string;
-  totalTokens: number;
-  channel: string;
+interface L0Message {
+  ts: number;
+  role: 'user' | 'assistant' | 'system';
+  content: string;
+  sessionId?: string;
+  source?: string;
 }
 
 interface L0Memory {
@@ -25,89 +23,109 @@ interface L0Memory {
   userName: string;
 }
 
-// Parse transcript file to extract conversation summary
-function parseTranscript(path: string): { messageCount: number; summary: string } {
+const L0_DIR = '/home/bruce/.openclaw/workspace/ai-memory-system/Memory/L0-state';
+
+// 从 L0-state 目录读取今日数据
+function readL0FromFile(): L0Message[] {
+  const today = new Date().toISOString().split('T')[0];
+  const l0File = join(L0_DIR, `daily-${today}.jsonl`);
+  
+  if (!existsSync(l0File)) {
+    console.log('L0 file not found:', l0File);
+    return [];
+  }
+  
   try {
-    const content = readFileSync(path, 'utf-8');
-    const lines = content.trim().split('\n').filter(line => line);
+    const content = readFileSync(l0File, 'utf-8');
+    const lines = content.split('\n').filter(line => line.trim());
     
-    let userMessages: string[] = [];
-    let assistantMessages: string[] = [];
-    
+    const messages: L0Message[] = [];
     for (const line of lines) {
       try {
-        const entry = JSON.parse(line);
-        if (entry.role === 'user' && entry.content) {
-          userMessages.push(entry.content.substring(0, 200));
-        } else if (entry.role === 'assistant' && entry.content) {
-          assistantMessages.push(entry.content.substring(0, 200));
+        const msg = JSON.parse(line);
+        if (msg.ts && msg.role) {
+          messages.push(msg);
         }
       } catch {
         // Skip invalid lines
       }
     }
     
-    // Generate summary from first user message and key interactions
-    const firstMessage = userMessages[0] || '会话开始';
-    const summary = firstMessage.length > 100 
-      ? firstMessage.substring(0, 100) + '...' 
-      : firstMessage;
-    
-    return {
-      messageCount: userMessages.length + assistantMessages.length,
-      summary
-    };
-  } catch {
-    return { messageCount: 0, summary: '无法读取会话内容' };
+    return messages;
+  } catch (error) {
+    console.error('Failed to read L0 file:', error);
+    return [];
   }
+}
+
+// 按会话分组消息
+function groupBySession(messages: L0Message[]): Map<string, L0Message[]> {
+  const groups = new Map<string, L0Message[]>();
+  
+  for (const msg of messages) {
+    const sessionId = msg.sessionId || 'unknown';
+    if (!groups.has(sessionId)) {
+      groups.set(sessionId, []);
+    }
+    groups.get(sessionId)!.push(msg);
+  }
+  
+  return groups;
 }
 
 export async function GET(request: Request) {
   try {
-    // Fetch sessions from OpenClaw CLI
-    const sessionsJson = execSync('openclaw sessions list --json 2>/dev/null || echo "[]"', {
-      encoding: 'utf-8',
-      timeout: 5000
-    });
+    // 从 L0-state 文件读取
+    const messages = readL0FromFile();
     
-    const sessions: OpenClawSession[] = JSON.parse(sessionsJson);
+    if (messages.length === 0) {
+      return NextResponse.json({
+        memories: [],
+        count: 0,
+        message: 'No L0 data found for today',
+        updatedAt: Date.now()
+      });
+    }
     
-    // Convert to L0 memories
-    const l0Memories: L0Memory[] = sessions
-      .filter(s => s.sessionId) // Only valid sessions
-      .map(session => {
-        const { messageCount, summary } = session.transcriptPath 
-          ? parseTranscript(session.transcriptPath)
-          : { messageCount: 0, summary: '新会话' };
-        
-        const date = new Date(session.updatedAt);
+    // 按会话分组
+    const sessionGroups = groupBySession(messages);
+    
+    // 转换为 L0 memories
+    const l0Memories: L0Memory[] = Array.from(sessionGroups.entries())
+      .map(([sessionId, sessionMessages]) => {
+        const userMessages = sessionMessages.filter(m => m.role === 'user');
+        const firstMessage = userMessages[0]?.content || '会话开始';
+        const lastMessage = sessionMessages[sessionMessages.length - 1];
         
         return {
-          id: `l0-${session.sessionId}`,
+          id: `l0-${sessionId}`,
           type: 'L0' as const,
-          title: `与 ${session.displayName || '用户'} 的会话`,
-          content: summary,
-          sessionId: session.sessionId,
-          timestamp: session.updatedAt,
-          messageCount,
-          preview: summary,
-          channel: session.channel,
-          userName: session.displayName || '未知用户'
+          title: `会话 ${sessionId.slice(0, 8)}`,
+          content: firstMessage,
+          sessionId,
+          timestamp: lastMessage?.ts || Date.now(),
+          messageCount: sessionMessages.length,
+          preview: firstMessage.length > 100 
+            ? firstMessage.substring(0, 100) + '...' 
+            : firstMessage,
+          channel: 'webchat',
+          userName: '用户'
         };
       })
-      .sort((a, b) => b.timestamp - a.timestamp) // Newest first
-      .slice(0, 10); // Keep only last 10 sessions
+      .sort((a, b) => b.timestamp - a.timestamp)
+      .slice(0, 10);
     
     return NextResponse.json({
       memories: l0Memories,
       count: l0Memories.length,
+      totalMessages: messages.length,
       updatedAt: Date.now()
     });
     
   } catch (error) {
     console.error('Failed to fetch L0 memories:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch sessions', memories: [] },
+      { error: 'Failed to fetch L0 data', memories: [] },
       { status: 500 }
     );
   }
