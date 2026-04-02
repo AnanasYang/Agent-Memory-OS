@@ -15,7 +15,8 @@ import {
   Sun,
   Languages,
   User,
-  LogOut
+  LogOut,
+  Sparkles
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useTheme } from 'next-themes';
@@ -40,6 +41,7 @@ export function Navigation() {
     { href: '/', label: t('nav.dashboard'), icon: Activity },
     { href: '/memory', label: t('nav.memory'), icon: Brain },
     { href: '/intent', label: t('nav.intent'), icon: Target },
+    { href: '/dreams', label: t('nav.dreams'), icon: Sparkles },
     { href: '/timeline', label: t('nav.timeline'), icon: Clock },
     { href: '/insights', label: t('nav.insights'), icon: LineChart },
     { href: '/search', label: t('nav.search'), icon: Search },

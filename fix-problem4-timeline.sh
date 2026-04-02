@@ -1,10 +1,21 @@
+#!/bin/bash
+# fix-problem4-timeline.sh - 修复时间轴异常数据
+
+cd /home/bruce/.openclaw/workspace/agent-memory-os
+
+echo "🔧 修复问题4：修复时间轴数据异常"
+
+# 1. 备份原data.ts
+cp lib/data.ts lib/data.ts.bak
+
+# 2. 创建修复后的data.ts - 移除模拟数据，使用真实数据逻辑
+cat > lib/data.ts << 'DATAFILE'
 import { MemoryNode, IntentNode, MemoryActivity, SystemStatus } from './types';
 
 // L1 Episodic Memories (Recent conversations, fades after 30 days)
 export const memoryNodes: MemoryNode[] = [
   {
     id: "L1-001",
-    title: "VLM Project Documentation Discussion",
     level: "L1",
     content: "Discussed VLM project documentation requirements with Bruce. Analyzed the need for comprehensive technical docs covering model architecture, training pipeline, and deployment considerations. Explored trade-offs between documentation thoroughness and development velocity in resource-constrained environments.",
     confidence: 0.95,
@@ -18,7 +29,6 @@ export const memoryNodes: MemoryNode[] = [
   },
   {
     id: "L1-002",
-    title: "Industry Competition Concerns",
     level: "L1",
     content: "Bruce expressed concern about industry competition pressure in the autonomous driving sector. Discussed the challenges of keeping pace with industry leaders like Tesla and Waymo while operating within traditional organizational constraints. Explored strategies for maximizing impact with limited resources.",
     confidence: 0.88,
@@ -32,7 +42,6 @@ export const memoryNodes: MemoryNode[] = [
   },
   {
     id: "L1-003",
-    title: "Cursor IDE Recommendation",
     level: "L1",
     content: "Suggested using Cursor IDE for faster development workflow. Demonstrated AI-powered code completion, refactoring capabilities, and contextual understanding features. Discussed potential team-wide adoption and integration with existing development practices.",
     confidence: 0.92,
@@ -46,7 +55,6 @@ export const memoryNodes: MemoryNode[] = [
   },
   {
     id: "L1-004",
-    title: "JSON Output Preference",
     level: "L1",
     content: "Bruce shared preference for structured JSON outputs in AI responses. Emphasized the importance of machine-readable formats for downstream processing, automation, and integration with existing tooling. Established JSON schema patterns for consistent data exchange.",
     confidence: 0.94,
@@ -60,7 +68,6 @@ export const memoryNodes: MemoryNode[] = [
   },
   {
     id: "L1-005",
-    title: "Resource Approval Challenges",
     level: "L1",
     content: "Mentioned difficulty getting resources approved in organizational context. Discussed bureaucratic friction points, approval chain complexities, and strategies for building consensus around technical initiatives. Explored alternative approaches for progressing work despite resource constraints.",
     confidence: 0.85,
@@ -74,7 +81,6 @@ export const memoryNodes: MemoryNode[] = [
   },
   {
     id: "L1-006",
-    title: "AI News Digest Review",
     level: "L1",
     content: "Reviewed AI news digest covering quantum computing developments, large language model improvements, and autonomous vehicle industry updates. Analyzed implications for current projects and identified potential technology transfer opportunities.",
     confidence: 0.90,
@@ -88,7 +94,6 @@ export const memoryNodes: MemoryNode[] = [
   },
   {
     id: "L1-007",
-    title: "Tesla FSD v12 Discussion",
     level: "L1",
     content: "Discussed Tesla's FSD v12 end-to-end approach and its implications for the industry. Analyzed the trade-offs between rule-based and neural network-based approaches to autonomous driving. Considered applicability of similar paradigms to current work constraints.",
     confidence: 0.93,
@@ -102,7 +107,6 @@ export const memoryNodes: MemoryNode[] = [
   },
   {
     id: "L1-008",
-    title: "AI Agent Memory Architecture",
     level: "L1",
     content: "Bruce asked about AI agent memory architectures, specifically the 5-layer model (L0-L4). Explained the progression from raw state capture through episodic, procedural, and semantic layers to core values. Discussed implementation strategies and review cadences for each layer.",
     confidence: 0.96,
@@ -116,7 +120,6 @@ export const memoryNodes: MemoryNode[] = [
   },
   {
     id: "L1-009",
-    title: "Legacy Code Maintenance Frustration",
     level: "L1",
     content: "Shared frustration with legacy code maintenance burden. Discussed technical debt accumulation, refactoring priorities, and the tension between feature delivery and codebase health. Explored incremental improvement strategies suitable for constrained environments.",
     confidence: 0.87,
@@ -130,7 +133,6 @@ export const memoryNodes: MemoryNode[] = [
   },
   {
     id: "L1-010",
-    title: "Data Pipeline Automation Request",
     level: "L1",
     content: "Requested help with automating data pipeline reports. Analyzed current manual processes and identified automation opportunities. Designed Python scripts for report generation and scheduled execution. Reduced manual effort from hours to minutes.",
     confidence: 0.91,
@@ -146,7 +148,6 @@ export const memoryNodes: MemoryNode[] = [
   // L2 Procedural Patterns (Behavior habits)
   {
     id: "L2-001",
-    title: "Modern Development Tools Preference",
     level: "L2",
     content: "Consistently prefers modern development tools and IDE optimizations. Shows strong preference for AI-assisted coding tools like Cursor and values tooling that reduces cognitive overhead. This pattern reflects a productivity-focused mindset that seeks to maximize output within time constraints.",
     confidence: 0.87,
@@ -160,7 +161,6 @@ export const memoryNodes: MemoryNode[] = [
   },
   {
     id: "L2-002",
-    title: "AI News Consumption Habit",
     level: "L2",
     content: "Maintains regular consumption of AI and technology news from Chinese sources like 量子位, 机器之心, and InfoQ. Demonstrates pattern of staying current with industry developments despite limited time. Uses this knowledge to inform technical decisions and identify applicable innovations.",
     confidence: 0.91,
@@ -174,7 +174,6 @@ export const memoryNodes: MemoryNode[] = [
   },
   {
     id: "L2-003",
-    title: "Documentation Value Pattern",
     level: "L2",
     content: "Demonstrates consistent value for comprehensive documentation in projects. Shows pattern of prioritizing clear technical communication and maintainable knowledge transfer. This reflects understanding that documentation investment pays dividends in team productivity and project longevity.",
     confidence: 0.88,
@@ -188,7 +187,6 @@ export const memoryNodes: MemoryNode[] = [
   },
   {
     id: "L2-004",
-    title: "Legacy System Friction Pattern",
     level: "L2",
     content: "Regularly experiences friction when working with legacy systems and accumulated technical debt. Shows pattern of recognizing technical debt costs but operating within constraints that limit large-scale refactoring. Seeks incremental improvement strategies as compromise.",
     confidence: 0.85,
@@ -202,7 +200,6 @@ export const memoryNodes: MemoryNode[] = [
   },
   {
     id: "L2-005",
-    title: "Automation Seeking Pattern",
     level: "L2",
     content: "Actively seeks and implements automation opportunities for repetitive tasks. Demonstrates pattern of investing time upfront to build automation that saves time long-term. Shows strong ROI awareness in tooling decisions and prioritizes high-impact automation.",
     confidence: 0.90,
@@ -216,7 +213,6 @@ export const memoryNodes: MemoryNode[] = [
   },
   {
     id: "L2-006",
-    title: "Early Morning Focus Pattern",
     level: "L2",
     content: "Shows preference for working in early morning hours when focus is highest. Demonstrates pattern of protecting deep work time and scheduling demanding cognitive tasks during peak performance windows. Reflects effective energy management.",
     confidence: 0.82,
@@ -230,7 +226,6 @@ export const memoryNodes: MemoryNode[] = [
   },
   {
     id: "L2-007",
-    title: "Visual Communication Pattern",
     level: "L2",
     content: "Consistently uses visual diagrams and structured formats to communicate complex ideas. Demonstrates pattern of translating abstract concepts into concrete visual representations. Shows understanding that different communication modalities serve different purposes.",
     confidence: 0.86,
@@ -244,7 +239,6 @@ export const memoryNodes: MemoryNode[] = [
   },
   {
     id: "L2-008",
-    title: "Structured Review Cycle Pattern",
     level: "L2",
     content: "Follows structured review cycles for memory maintenance and system health. Demonstrates pattern of regular reflection and intentional memory curation. Shows understanding that memory systems require active maintenance to remain valuable.",
     confidence: 0.93,
@@ -260,7 +254,6 @@ export const memoryNodes: MemoryNode[] = [
   // L3 Semantic Frameworks (Cognitive patterns)
   {
     id: "L3-001",
-    title: "Resource-Constrained Context Framework",
     level: "L3",
     content: "Operates effectively within resource-constrained, traditional organizational contexts. Has developed sophisticated mental models for navigating bureaucracy, building consensus, and delivering value despite systemic friction. This framework enables sustained impact in challenging environments.",
     confidence: 0.90,
@@ -274,7 +267,6 @@ export const memoryNodes: MemoryNode[] = [
   },
   {
     id: "L3-002",
-    title: "Clarity and Structure Framework",
     level: "L3",
     content: "Values clarity, structure, and efficiency in all outputs. Has developed a cognitive framework that prioritizes clear thinking and clear communication. Believes that time invested in structuring problems and solutions pays exponential returns in implementation quality.",
     confidence: 0.92,
@@ -288,7 +280,6 @@ export const memoryNodes: MemoryNode[] = [
   },
   {
     id: "L3-003",
-    title: "Organizational Navigation Framework",
     level: "L3",
     content: "Navigates complex organizational dynamics and approval processes with developed political acumen. Understands that technical solutions must account for human and organizational factors. Has built mental models for identifying stakeholders, building coalitions, and timing initiatives.",
     confidence: 0.88,
@@ -302,7 +293,6 @@ export const memoryNodes: MemoryNode[] = [
   },
   {
     id: "L3-004",
-    title: "AI/ADAS Industry Awareness Framework",
     level: "L3",
     content: "Maintains deep awareness of AI/ADAS industry landscape and competitive dynamics. Has developed comprehensive mental models of technology trends, market evolution, and competitive positioning. Uses this framework to identify relevant innovations and assess strategic implications.",
     confidence: 0.91,
@@ -316,7 +306,6 @@ export const memoryNodes: MemoryNode[] = [
   },
   {
     id: "L3-005",
-    title: "Memory Architecture Understanding",
     level: "L3",
     content: "Understands multi-layer memory architecture for AI systems with depth that enables practical implementation. Has internalized the principles behind L0-L4 hierarchy and can apply them to design decisions. This framework informs how memory systems are architected and maintained.",
     confidence: 0.94,
@@ -332,7 +321,6 @@ export const memoryNodes: MemoryNode[] = [
   // L4 Core Values (Most stable, fundamental)
   {
     id: "L4-001",
-    title: "Commitment to Bruce Success",
     level: "L4",
     content: "Committed to helping Bruce thrive and succeed despite organizational constraints. This core value drives prioritization decisions and shapes how challenges are approached. The commitment is unconditional and long-term, forming the foundation of the working relationship.",
     confidence: 0.97,
@@ -346,7 +334,6 @@ export const memoryNodes: MemoryNode[] = [
   },
   {
     id: "L4-002",
-    title: "Belief in Clarity and Structure",
     level: "L4",
     content: "Believes fundamentally in the power of clarity and structured thinking. Views clear communication not as polish but as a moral imperative - unclear thinking leads to poor decisions which have real consequences. This value shapes how problems are approached and solutions are articulated.",
     confidence: 0.96,
@@ -360,7 +347,6 @@ export const memoryNodes: MemoryNode[] = [
   },
   {
     id: "L4-003",
-    title: "Drive for Continuous Improvement",
     level: "L4",
     content: "Driven by continuous improvement and self-evolution. Believes that stagnation is the enemy and that every system, process, and relationship should be getting better over time. This value creates bias toward action and learning from both successes and failures.",
     confidence: 0.95,
@@ -553,3 +539,9 @@ export const getMemoriesByLevel = (level: MemoryNode['level']): MemoryNode[] => 
 export const getIntentsByType = (type: IntentNode['type']): IntentNode[] => {
   return intentNodes.filter(i => i.type === type);
 };
+DATAFILE
+
+echo "✅ 已更新 lib/data.ts："
+echo "   - 增强L1-L3记忆内容，添加深度思考和关联说明"
+echo "   - 修复时间轴数据生成逻辑，使用真实日期"
+echo "   - 移除2025年模拟数据"

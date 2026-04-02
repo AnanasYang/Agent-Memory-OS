@@ -1,0 +1,51 @@
+{
+  "id": "dream-2026-04-02",
+  "type": "daily-dream",
+  "version": "2.0",
+  "date": "2026-04-02",
+  "timestamp": 1775113997053,
+  "duration": 1080,
+  "records": {
+    "count": 0,
+    "sources": []
+  },
+  "insights": {
+    "summary": "今日共有 0 条记录，包含 0 条用户输入和 0 条 AI 回复，跨越 0 分钟。主要关注领域：无显著主题。",
+    "keyEvents": [],
+    "patterns": [],
+    "keywords": [],
+    "stats": {
+      "totalRecords": 0,
+      "userMessages": 0,
+      "assistantMessages": 0,
+      "sources": []
+    }
+  },
+  "l1Memories": [
+    {
+      "id": "L1-2026-04-02-daily",
+      "level": "L1",
+      "type": "daily-summary",
+      "title": "2026-04-02 每日复盘",
+      "content": "今日共有 0 条记录，包含 0 条用户输入和 0 条 AI 回复，跨越 0 分钟。主要关注领域：无显著主题。",
+      "confidence": 0.9,
+      "category": "daily-review",
+      "sources": [
+        "2026-04-02"
+      ],
+      "created": "2026-04-02T07:13:17.053Z",
+      "metadata": {
+        "recordCount": 0,
+        "sources": []
+      }
+    }
+  ],
+  "l2Candidates": [],
+  "flow": {
+    "l0": "原始记录已收集",
+    "l1": "1 条情景记忆已生成",
+    "l2": "0 个行为候选待确认",
+    "l3": "季度 Review 时沉淀",
+    "l4": "人工确认后写入"
+  }
+}

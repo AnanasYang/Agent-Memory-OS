@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { MemoryGalaxy } from '@/components/memory-galaxy';
 import { IntentOrbit } from '@/components/intent-orbit';
 import { StatusStream } from '@/components/status-stream';
+import { L0MemoryList } from '@/components/l0-memory-list';
 import { useLanguage } from '@/components/language-provider';
 import { 
   Brain, 
@@ -11,7 +12,8 @@ import {
   Activity, 
   TrendingUp, 
   ArrowRight,
-  Sparkles
+  Sparkles,
+  MessageSquare
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -102,41 +104,19 @@ export default function DashboardPage() {
           </div>
         </motion.div>
 
-        {/* Evolution Timeline Preview */}
+        {/* L0 Memory List */}
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
+          transition={{ delay: 0.35 }}
           className="bg-card border rounded-lg overflow-hidden"
         >
-          <div className="p-4 border-b flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <TrendingUp className="w-5 h-5 text-green-500" />
-              <h2 className="font-semibold">{t('nav.timeline')}</h2>
-            </div>
-            <Link 
-              href="/timeline" 
-              className="text-sm text-primary hover:underline flex items-center gap-1"
-            >
-              {t('common.viewAll')} <ArrowRight className="w-4 h-4" />
-            </Link>
+          <div className="p-4 border-b flex items-center gap-2">
+            <MessageSquare className="w-5 h-5 text-blue-400" />
+            <h2 className="font-semibold">工作记忆 (L0)</h2>
           </div>
-          <div className="p-4">
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <p className="text-2xl font-bold">1,247</p>
-                <p className="text-sm text-muted-foreground">活动总数</p>
-              </div>
-              <div>
-                <p className="text-2xl font-bold text-green-500">+23%</p>
-                <p className="text-sm text-muted-foreground">较上月</p>
-              </div>
-            </div>
-            <div className="h-32 bg-muted/50 rounded-lg flex items-center justify-center text-muted-foreground">
-              <Link href="/timeline" className="hover:text-primary transition-colors">
-                {t('common.viewAll')} →
-              </Link>
-            </div>
+          <div className="p-4 max-h-80 overflow-auto">
+            <L0MemoryList compact />
           </div>
         </motion.div>
       </div>
