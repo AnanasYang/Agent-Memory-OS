@@ -18,7 +18,7 @@ export const memoryNodes: MemoryNode[] = [
   },
   {
     id: "L1-002",
-    title: "Memory 002",
+    title: "Concern About Industry Competition Pressure",
     level: "L1",
     content: "Bruce expressed concern about industry competition pressure",
     confidence: 0.88,
@@ -32,7 +32,7 @@ export const memoryNodes: MemoryNode[] = [
   },
   {
     id: "L1-003",
-    title: "Memory 003",
+    title: "Using Cursor Ide For Faster Development",
     level: "L1",
     content: "Suggested using Cursor IDE for faster development",
     confidence: 0.92,
@@ -46,7 +46,7 @@ export const memoryNodes: MemoryNode[] = [
   },
   {
     id: "L1-004",
-    title: "Memory 004",
+    title: "Shared Preference For Structured Json Outputs",
     level: "L1",
     content: "Bruce shared preference for structured JSON outputs",
     confidence: 0.94,
@@ -60,7 +60,7 @@ export const memoryNodes: MemoryNode[] = [
   },
   {
     id: "L1-005",
-    title: "Memory 005",
+    title: "Difficulty Getting Resources Approved In Org",
     level: "L1",
     content: "Mentioned difficulty getting resources approved in org",
     confidence: 0.85,
@@ -74,7 +74,7 @@ export const memoryNodes: MemoryNode[] = [
   },
   {
     id: "L1-006",
-    title: "Memory 006",
+    title: "Ai News Digest From Quantum Computing",
     level: "L1",
     content: "Reviewed AI news digest from quantum computing developments",
     confidence: 0.90,
@@ -88,7 +88,7 @@ export const memoryNodes: MemoryNode[] = [
   },
   {
     id: "L1-007",
-    title: "Memory 007",
+    title: "Tesla's Fsd V12 End-to-end Approach",
     level: "L1",
     content: "Discussed Tesla's FSD v12 end-to-end approach",
     confidence: 0.93,
@@ -102,7 +102,7 @@ export const memoryNodes: MemoryNode[] = [
   },
   {
     id: "L1-008",
-    title: "Memory 008",
+    title: "About Ai Agent Memory Architectures",
     level: "L1",
     content: "Bruce asked about AI agent memory architectures",
     confidence: 0.96,
@@ -116,7 +116,7 @@ export const memoryNodes: MemoryNode[] = [
   },
   {
     id: "L1-009",
-    title: "Memory 009",
+    title: "Frustration With Legacy Code Maintenance",
     level: "L1",
     content: "Shared frustration with legacy code maintenance",
     confidence: 0.87,
@@ -130,7 +130,7 @@ export const memoryNodes: MemoryNode[] = [
   },
   {
     id: "L1-010",
-    title: "Memory 010",
+    title: "Help With Automating Data Pipeline Reports",
     level: "L1",
     content: "Requested help with automating data pipeline reports",
     confidence: 0.91,
@@ -144,7 +144,7 @@ export const memoryNodes: MemoryNode[] = [
   },
   {
     id: "L1-011",
-    title: "Memory 011",
+    title: "Upcoming Quarterly Review Preparation",
     level: "L1",
     content: "Mentioned upcoming quarterly review preparation",
     confidence: 0.89,
@@ -158,7 +158,7 @@ export const memoryNodes: MemoryNode[] = [
   },
   {
     id: "L1-012",
-    title: "Memory 012",
+    title: "In Learning More About Moe Architectures",
     level: "L1",
     content: "Shared interest in learning more about MoE architectures",
     confidence: 0.85,
@@ -174,7 +174,7 @@ export const memoryNodes: MemoryNode[] = [
   // L2 Procedural Patterns (Behavior habits)
   {
     id: "L2-001",
-    title: "Memory 001",
+    title: "Modern Development Tools And Ide Optimizations",
     level: "L2",
     content: "Prefers modern development tools and IDE optimizations",
     confidence: 0.87,
@@ -188,7 +188,7 @@ export const memoryNodes: MemoryNode[] = [
   },
   {
     id: "L2-002",
-    title: "Memory 002",
+    title: "Consumes Ai/tech News From Chinese Sources",
     level: "L2",
     content: "Regularly consumes AI/tech news from Chinese sources",
     confidence: 0.91,
@@ -202,7 +202,7 @@ export const memoryNodes: MemoryNode[] = [
   },
   {
     id: "L2-003",
-    title: "Memory 003",
+    title: "Comprehensive Documentation For Projects",
     level: "L2",
     content: "Values comprehensive documentation for projects",
     confidence: 0.88,
@@ -216,7 +216,7 @@ export const memoryNodes: MemoryNode[] = [
   },
   {
     id: "L2-004",
-    title: "Memory 004",
+    title: "Friction With Legacy Systems And Technical",
     level: "L2",
     content: "Experiences friction with legacy systems and technical debt",
     confidence: 0.85,
@@ -230,7 +230,7 @@ export const memoryNodes: MemoryNode[] = [
   },
   {
     id: "L2-005",
-    title: "Memory 005",
+    title: "Seeks Automation Opportunities For Repetitive Tasks",
     level: "L2",
     content: "Actively seeks automation opportunities for repetitive tasks",
     confidence: 0.90,
@@ -244,7 +244,7 @@ export const memoryNodes: MemoryNode[] = [
   },
   {
     id: "L2-006",
-    title: "Memory 006",
+    title: "Working In Early Morning Hours For",
     level: "L2",
     content: "Prefers working in early morning hours for focus",
     confidence: 0.82,
@@ -258,7 +258,7 @@ export const memoryNodes: MemoryNode[] = [
   },
   {
     id: "L2-007",
-    title: "Memory 007",
+    title: "Visual Diagrams To Communicate Complex Ideas",
     level: "L2",
     content: "Uses visual diagrams to communicate complex ideas",
     confidence: 0.86,
@@ -272,7 +272,7 @@ export const memoryNodes: MemoryNode[] = [
   },
   {
     id: "L2-008",
-    title: "Memory 008",
+    title: "Structured Review Cycles For Memory Maintenance",
     level: "L2",
     content: "Follows structured review cycles for memory maintenance",
     confidence: 0.93,
@@ -288,7 +288,7 @@ export const memoryNodes: MemoryNode[] = [
   // L3 Semantic Frameworks (Cognitive patterns)
   {
     id: "L3-001",
-    title: "Memory 001",
+    title: "Within Resource-constrained Traditional Organizational Context",
     level: "L3",
     content: "Operates within resource-constrained, traditional organizational context",
     confidence: 0.90,
@@ -302,7 +302,7 @@ export const memoryNodes: MemoryNode[] = [
   },
   {
     id: "L3-002",
-    title: "Memory 002",
+    title: "Clarity Structure And Efficiency In All",
     level: "L3",
     content: "Values clarity, structure, and efficiency in all outputs",
     confidence: 0.92,
@@ -316,7 +316,7 @@ export const memoryNodes: MemoryNode[] = [
   },
   {
     id: "L3-003",
-    title: "Memory 003",
+    title: "Complex Organizational Dynamics And Approval Processes",
     level: "L3",
     content: "Navigates complex organizational dynamics and approval processes",
     confidence: 0.88,
@@ -330,7 +330,7 @@ export const memoryNodes: MemoryNode[] = [
   },
   {
     id: "L3-004",
-    title: "Memory 004",
+    title: "Deep Awareness Of Ai/adas Industry Landscape",
     level: "L3",
     content: "Maintains deep awareness of AI/ADAS industry landscape",
     confidence: 0.91,
@@ -344,7 +344,7 @@ export const memoryNodes: MemoryNode[] = [
   },
   {
     id: "L3-005",
-    title: "Memory 005",
+    title: "Multi-layer Memory Architecture For Ai Systems",
     level: "L3",
     content: "Understands multi-layer memory architecture for AI systems",
     confidence: 0.94,
@@ -360,7 +360,7 @@ export const memoryNodes: MemoryNode[] = [
   // L4 Core Values (Most stable, fundamental)
   {
     id: "L4-001",
-    title: "Memory 001",
+    title: "To Helping Bruce Thrive Despite Organizational",
     level: "L4",
     content: "Committed to helping Bruce thrive despite organizational constraints",
     confidence: 0.97,
@@ -374,7 +374,7 @@ export const memoryNodes: MemoryNode[] = [
   },
   {
     id: "L4-002",
-    title: "Memory 002",
+    title: "The Power Of Clarity And Structured",
     level: "L4",
     content: "Believes in the power of clarity and structured thinking",
     confidence: 0.96,
@@ -388,7 +388,7 @@ export const memoryNodes: MemoryNode[] = [
   },
   {
     id: "L4-003",
-    title: "Memory 003",
+    title: "By Continuous Improvement And Self-evolution",
     level: "L4",
     content: "Driven by continuous improvement and self-evolution",
     confidence: 0.95,
