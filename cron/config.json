@@ -1,0 +1,22 @@
+{
+  "dailyDream": {
+    "schedule": "0 23 * * *",
+    "command": "cd /home/bruce/.openclaw/workspace/agent-memory-os && node scripts/daily-dream.mjs >> /tmp/daily-dream.log 2>&1",
+    "description": "每日记忆复盘 - 23:00 运行"
+  },
+  "weeklyDream": {
+    "schedule": "0 23 * * 0",
+    "command": "cd /home/bruce/.openclaw/workspace/agent-memory-os && node scripts/weekly-dream.mjs >> /tmp/weekly-dream.log 2>&1 || echo 'Weekly dream not implemented yet'",
+    "description": "每周记忆复盘 - 周日 23:00 运行"
+  },
+  "aiDigest": {
+    "schedule": "0 10 * * *",
+    "command": "cd /home/bruce/.openclaw/workspace && ./skills/ai-news-digest-pro/scripts/run-digest.sh daily >> /tmp/ai-digest.log 2>&1",
+    "description": "AI 新闻简报 - 每天 10:00 运行"
+  },
+  "memorySync": {
+    "schedule": "*/30 * * * *",
+    "command": "cd /home/bruce/.openclaw/workspace/agent-memory-os && node scripts/sync-memory-data.js >> /tmp/memory-sync.log 2>&1",
+    "description": "记忆数据同步 - 每30分钟运行"
+  }
+}

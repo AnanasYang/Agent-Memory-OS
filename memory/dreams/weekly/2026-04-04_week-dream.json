@@ -1,0 +1,24 @@
+{
+  "id": "weekly-dream-2026-04-04_week",
+  "type": "weekly-dream",
+  "date": "2026-04-05",
+  "weekKey": "2026-04-04_week",
+  "timestamp": 1775401201733,
+  "dreams": 1,
+  "insights": {
+    "summary": "本周共 1 日复盘，0 次对话，生成 1 条 L1 记忆",
+    "weekStart": "2026-04-04T16:00:00.000Z",
+    "weekEnd": "2026-04-05T15:00:01.732Z",
+    "totalDays": 1,
+    "totalSessions": 0,
+    "totalL1": 1,
+    "keyEvents": [],
+    "patterns": [],
+    "insights": [
+      "本周记忆系统运行正常",
+      "1/7 天有使用记录"
+    ]
+  },
+  "l2Updates": [],
+  "l3Updates": []
+}

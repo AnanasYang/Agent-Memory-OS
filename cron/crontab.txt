@@ -1,0 +1,15 @@
+# Agent Memory OS - Cron Jobs
+# Generated: 2026-04-05 22:52
+# 任务: 打通数据源 + 提高自动化
+
+# 记忆数据同步 - 每30分钟
+*/30 * * * * cd /home/bruce/.openclaw/workspace/agent-memory-os && node scripts/sync-memory-data.js >> /tmp/memory-sync.log 2>&1
+
+# Daily Dream - 每天 23:00
+0 23 * * * cd /home/bruce/.openclaw/workspace/agent-memory-os && node scripts/daily-dream.mjs >> /tmp/daily-dream.log 2>&1
+
+# Weekly Dream - 每周日 23:00
+0 23 * * 0 cd /home/bruce/.openclaw/workspace/agent-memory-os && node scripts/weekly-dream.mjs >> /tmp/weekly-dream.log 2>&1 || echo "Weekly dream not implemented yet"
+
+# AI 新闻简报 - 每天 10:00
+0 10 * * * cd /home/bruce/.openclaw/workspace && ./skills/ai-news-digest-pro/scripts/run-digest.sh daily >> /tmp/ai-digest.log 2>&1
