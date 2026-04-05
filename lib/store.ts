@@ -31,15 +31,7 @@ interface MemoryStore {
   setFilterLevel: (level: MemoryNode['level'] | 'all' | 'L0') => void;
   setFilterCategory: (category: string | 'all') => void;
   toggleTheme: () => void;
-  updateMemory: (id: string, updates: Partial<MemoryNode>) => void;
-  updateMemoryPosition: (id: string, position: { x: number; y: number }) => void;
-  updateIntent: (id: string, updates: Partial<IntentNode>) => void;
-  addMemory: (memory: MemoryNode) => void;
-  addIntent: (intent: IntentNode) => void;
-  elevateMemory: (id: string) => void;
-  confirmMemoryReview: (id: string) => void;
   fetchL0Memories: () => Promise<void>;
-  fetchL0SessionDetail: (sessionId: string) => Promise<{ messages: any[]; summary: string } | null>;
   fetchDreams: () => Promise<void>;
   
   // Computed
@@ -51,25 +43,27 @@ interface MemoryStore {
   getL0MemoryById: (id: string) => L0Memory | undefined;
 }
 
-export const useMemoryStore = create<MemoryStore>((set, get) => ({
-  // Initial state
+export const useAgentOSStore = create<MemoryStore>((set, get) => ({
+  // Data
   memories: memoryNodes,
   l0Memories: [],
   intents: intentNodes,
   dreams: [],
   systemStatus: systemStatus,
+  
+  // UI State
   selectedMemoryId: null,
   selectedIntentId: null,
   selectedL0MemoryId: null,
   searchQuery: '',
   filterLevel: 'all',
   filterCategory: 'all',
-  theme: 'dark',
+  theme: 'light',
   isLoadingL0: false,
   l0Error: null,
   isLoadingDreams: false,
   dreamsError: null,
-
+  
   // Actions
   setSelectedMemory: (id) => set({ selectedMemoryId: id }),
   setSelectedIntent: (id) => set({ selectedIntentId: id }),
@@ -77,74 +71,12 @@ export const useMemoryStore = create<MemoryStore>((set, get) => ({
   setSearchQuery: (query) => set({ searchQuery: query }),
   setFilterLevel: (level) => set({ filterLevel: level }),
   setFilterCategory: (category) => set({ filterCategory: category }),
+  toggleTheme: () => set((state) => ({ theme: state.theme === 'light' ? 'dark' : 'light' })),
   
-  toggleTheme: () => set((state) => ({ 
-    theme: state.theme === 'light' ? 'dark' : 'light' 
-  })),
-  
-  updateMemory: (id, updates) => set((state) => ({
-    memories: state.memories.map(m => 
-      m.id === id ? { ...m, ...updates, updated: new Date().toISOString() } : m
-    )
-  })),
-  
-  updateMemoryPosition: (id, position) => set((state) => ({
-    memories: state.memories.map(m => 
-      m.id === id ? { ...m, position: { ...m.position, ...position }, updated: new Date().toISOString() } : m
-    )
-  })),
-  
-  updateIntent: (id, updates) => set((state) => ({
-    intents: state.intents.map(i => 
-      i.id === id ? { ...i, ...updates } : i
-    )
-  })),
-  
-  addMemory: (memory) => set((state) => ({
-    memories: [...state.memories, memory]
-  })),
-  
-  addIntent: (intent) => set((state) => ({
-    intents: [...state.intents, intent]
-  })),
-  
-  // Elevate memory to next level (L1 -> L2 -> L3 -> L4)
-  elevateMemory: (id) => set((state) => ({
-    memories: state.memories.map(m => {
-      if (m.id !== id) return m;
-      
-      const levelMap: Record<string, string> = {
-        'L1': 'L2',
-        'L2': 'L3',
-        'L3': 'L4',
-      };
-      
-      const newLevel = levelMap[m.level] as MemoryNode['level'];
-      if (!newLevel) return m;
-      
-      return {
-        ...m,
-        level: newLevel,
-        updated: new Date().toISOString(),
-        reviewed: new Date().toISOString(),
-      };
-    })
-  })),
-  
-  // Confirm review of a memory
-  confirmMemoryReview: (id) => set((state) => ({
-    memories: state.memories.map(m => 
-      m.id === id 
-        ? { ...m, reviewed: new Date().toISOString(), updated: new Date().toISOString() }
-        : m
-    )
-  })),
-  
-  // Fetch L0 memories from OpenClaw API
   fetchL0Memories: async () => {
     set({ isLoadingL0: true, l0Error: null });
     try {
-      const response = await fetch('/api/l0-memories');
+      const response = await fetch('/api/l0');
       if (!response.ok) {
         throw new Error(`Failed to fetch L0 memories: ${response.status}`);
       }
@@ -159,22 +91,6 @@ export const useMemoryStore = create<MemoryStore>((set, get) => ({
     }
   },
   
-  // Fetch detailed session content from OpenClaw
-  fetchL0SessionDetail: async (sessionId: string) => {
-    try {
-      const response = await fetch(`/api/sessions/${sessionId}/export`);
-      if (!response.ok) {
-        throw new Error(`Failed to fetch session detail: ${response.status}`);
-      }
-      const data = await response.json();
-      return data;
-    } catch (error) {
-      console.error('Failed to fetch session detail:', error);
-      return null;
-    }
-  },
-  
-  // Fetch Dreams from API
   fetchDreams: async () => {
     set({ isLoadingDreams: true, dreamsError: null });
     try {
@@ -225,3 +141,22 @@ export const useMemoryStore = create<MemoryStore>((set, get) => ({
   },
   getL0MemoryById: (id) => get().l0Memories.find(m => m.id === id),
 }));
+
+// Alias for backward compatibility
+export const useMemoryStore = useAgentOSStore;
+
+// Hook for auto-refresh functionality
+export function useAutoRefresh(interval: number = 30000) {
+  // This is a placeholder for the actual implementation
+  // In a real app, this would set up polling or websocket connections
+  return { refresh: () => {} };
+}
+
+// Types for L0 messages
+export interface L0Message {
+  id: string;
+  content: string;
+  timestamp: string;
+  sender: 'user' | 'ai';
+  sessionId: string;
+}

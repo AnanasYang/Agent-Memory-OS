@@ -10,11 +10,19 @@ interface MemoryNode {
   level: 'L1' | 'L2' | 'L3' | 'L4';
   category: string;
   confidence: number;
+  x?: number;
+  y?: number;
+  fx?: number | null;
+  fy?: number | null;
 }
 
 interface MemoryGalaxyProps {
   compact?: boolean;
 }
+
+const levelSizes: any = { L1: 18, L2: 24, L3: 30, L4: 38 };
+const levelColors: any = { L1: '#3b82f6', L2: '#f59e0b', L3: '#8b5cf6', L4: '#ef4444' };
+const levelGlowColors: any = { L1: 'rgba(59, 130, 246, 0.4)', L2: 'rgba(245, 158, 11, 0.4)', L3: 'rgba(139, 92, 246, 0.4)', L4: 'rgba(239, 68, 68, 0.4)' };
 
 export function MemoryGalaxy({ compact = false }: MemoryGalaxyProps) {
   const svgRef = useRef<SVGSVGElement>(null);
@@ -22,7 +30,6 @@ export function MemoryGalaxy({ compact = false }: MemoryGalaxyProps) {
   const [selectedNode, setSelectedNode] = useState<MemoryNode | null>(null);
   const [hoveredNode, setHoveredNode] = useState<string | null>(null);
 
-  // 模拟记忆节点数据
   useEffect(() => {
     const mockNodes: MemoryNode[] = [
       { id: 'L1-001', title: '记忆系统初始化', level: 'L1', category: 'system', confidence: 0.95 },
@@ -41,7 +48,6 @@ export function MemoryGalaxy({ compact = false }: MemoryGalaxyProps) {
     setNodes(mockNodes);
   }, []);
 
-  // D3 可视化
   useEffect(() => {
     if (!svgRef.current || nodes.length === 0) return;
 
@@ -51,7 +57,7 @@ export function MemoryGalaxy({ compact = false }: MemoryGalaxyProps) {
     const width = svgRef.current.clientWidth;
     const height = svgRef.current.clientHeight;
 
-    // 添加背景网格
+    // 背景网格
     const gridGroup = svg.append('g').attr('class', 'grid');
     const gridSize = 30;
     for (let x = 0; x < width; x += gridSize) {
@@ -71,74 +77,41 @@ export function MemoryGalaxy({ compact = false }: MemoryGalaxyProps) {
         .attr('stroke-width', 1);
     }
 
-    // 层级颜色 - 更鲜艳的渐变色
-    const levelColors = {
-      L1: '#3b82f6',
-      L2: '#f59e0b',
-      L3: '#8b5cf6',
-      L4: '#ef4444'
-    };
-
-    // 层级发光颜色
-    const levelGlowColors = {
-      L1: 'rgba(59, 130, 246, 0.4)',
-      L2: 'rgba(245, 158, 11, 0.4)',
-      L3: 'rgba(139, 92, 246, 0.4)',
-      L4: 'rgba(239, 68, 68, 0.4)'
-    };
-
-    // 层级大小
-    const levelSizes = {
-      L1: 18,
-      L2: 24,
-      L3: 30,
-      L4: 38
-    };
-
-    // 初始化位置 - 螺旋分布
+    // 初始化位置
     const centerX = width / 2;
     const centerY = height / 2;
-    nodes.forEach((node, i) => {
+    nodes.forEach((node: any, i) => {
       const angle = (i / nodes.length) * Math.PI * 2;
       const radius = 50 + (i % 3) * 60;
       node.x = centerX + Math.cos(angle) * radius;
       node.y = centerY + Math.sin(angle) * radius;
     });
 
-    // 力导向图模拟
-    const simulation = d3.forceSimulation(nodes as any)
+    // 力导向图
+    const simulation: any = d3.forceSimulation(nodes as any)
       .force('charge', d3.forceManyBody().strength(-200))
       .force('center', d3.forceCenter(width / 2, height / 2))
-      .force('collision', d3.forceCollide().radius(d => levelSizes[d.level] + 15))
+      .force('collision', d3.forceCollide().radius((d: any) => levelSizes[d.level] + 15))
       .force('link', d3.forceLink()
         .links(nodes.slice(1).map((n, i) => ({ source: nodes[0], target: n })))
         .distance(80)
         .strength(0.3)
       );
 
-    // 定义发光滤镜
+    // 发光滤镜
     const defs = svg.append('defs');
     ['L1', 'L2', 'L3', 'L4'].forEach(level => {
       const filter = defs.append('filter')
         .attr('id', `glow-${level}`)
         .attr('x', '-50%').attr('y', '-50%')
         .attr('width', '200%').attr('height', '200%');
-      
-      filter.append('feGaussianBlur')
-        .attr('stdDeviation', '4')
-        .attr('result', 'coloredBlur');
-      
-      filter.append('feMerge')
-        .append('feMergeNode')
-        .attr('in', 'coloredBlur');
-      
-      filter.append('feMerge')
-        .append('feMergeNode')
-        .attr('in', 'SourceGraphic');
+      filter.append('feGaussianBlur').attr('stdDeviation', '4').attr('result', 'coloredBlur');
+      filter.append('feMerge').append('feMergeNode').attr('in', 'coloredBlur');
+      filter.append('feMerge').append('feMergeNode').attr('in', 'SourceGraphic');
     });
 
-    // 绘制连线 - 带渐变
-    const links = svg.selectAll('.link')
+    // 连线
+    const links: any = svg.selectAll('.link')
       .data(nodes.slice(1).map((n, i) => ({ source: nodes[0], target: n })))
       .enter()
       .append('line')
@@ -147,83 +120,79 @@ export function MemoryGalaxy({ compact = false }: MemoryGalaxyProps) {
       .attr('stroke-width', 1.5)
       .attr('stroke-opacity', 0.3);
 
-    // 连线渐变
-    const lineGradient = defs.append('linearGradient')
-      .attr('id', 'line-gradient')
-      .attr('gradientUnits', 'userSpaceOnUse');
+    const lineGradient = defs.append('linearGradient').attr('id', 'line-gradient').attr('gradientUnits', 'userSpaceOnUse');
     lineGradient.append('stop').attr('offset', '0%').attr('stop-color', '#8b5cf6').attr('stop-opacity', 0.5);
     lineGradient.append('stop').attr('offset', '100%').attr('stop-color', '#3b82f6').attr('stop-opacity', 0.2);
 
-    // 绘制节点
-    const nodeGroups = svg.selectAll('.node')
+    // 节点
+    const nodeGroups: any = svg.selectAll('.node')
       .data(nodes)
       .enter()
       .append('g')
       .attr('class', 'node')
       .style('cursor', 'pointer')
-      .on('click', (event, d) => {
-        setSelectedNode(d);
-      })
-      .on('mouseenter', (event, d) => {
+      .on('click', (event: any, d: any) => setSelectedNode(d))
+      .on('mouseenter', (event: any, d: any) => {
         setHoveredNode(d.id);
         d3.select(event.currentTarget).select('circle')
           .transition().duration(200)
           .attr('r', levelSizes[d.level] * 1.2);
       })
-      .on('mouseleave', (event, d) => {
+      .on('mouseleave', (event: any, d: any) => {
         setHoveredNode(null);
         d3.select(event.currentTarget).select('circle')
           .transition().duration(200)
           .attr('r', levelSizes[d.level]);
-      })
-      .call(d3.drag()
-        .on('start', (event, d: any) => {
-          if (!event.active) simulation.alphaTarget(0.3).restart();
-          d.fx = d.x;
-          d.fy = d.y;
-        })
-        .on('drag', (event, d: any) => {
-          d.fx = event.x;
-          d.fy = event.y;
-        })
-        .on('end', (event, d: any) => {
-          if (!event.active) simulation.alphaTarget(0);
-          d.fx = null;
-          d.fy = null;
-        })
-      );
+      });
 
-    // 节点外发光圆圈
+    // @ts-ignore - D3 drag types are complex
+    nodeGroups.call(d3.drag()
+      .on('start', (event: any, d: any) => {
+        if (!event.active) simulation.alphaTarget(0.3).restart();
+        d.fx = d.x;
+        d.fy = d.y;
+      })
+      .on('drag', (event: any, d: any) => {
+        d.fx = event.x;
+        d.fy = event.y;
+      })
+      .on('end', (event: any, d: any) => {
+        if (!event.active) simulation.alphaTarget(0);
+        d.fx = null;
+        d.fy = null;
+      })
+    );
+
+    // 发光圆圈
     nodeGroups.append('circle')
-      .attr('r', d => levelSizes[d.level] + 8)
-      .attr('fill', d => levelGlowColors[d.level])
+      .attr('r', (d: any) => levelSizes[d.level] + 8)
+      .attr('fill', (d: any) => levelGlowColors[d.level])
       .attr('opacity', 0)
-      .transition().duration(500).delay((d, i) => i * 50)
+      .transition().duration(500).delay((d: any, i: number) => i * 50)
       .attr('opacity', 0.6);
 
-    // 节点主圆圈
+    // 主圆圈
     nodeGroups.append('circle')
-      .attr('r', d => levelSizes[d.level])
-      .attr('fill', d => levelColors[d.level])
+      .attr('r', (d: any) => levelSizes[d.level])
+      .attr('fill', (d: any) => levelColors[d.level])
       .attr('stroke', 'white')
       .attr('stroke-width', 3)
-      .style('filter', d => `url(#glow-${d.level})`)
       .style('filter', 'drop-shadow(0 4px 8px rgba(0,0,0,0.15))');
 
-    // 节点内部图标
+    // 图标
     nodeGroups.append('text')
-      .text(d => d.level)
+      .text((d: any) => d.level)
       .attr('text-anchor', 'middle')
       .attr('dy', '.35em')
       .attr('fill', 'white')
       .attr('font-size', '11px')
       .attr('font-weight', 'bold');
 
-    // 标题标签
+    // 标题
     nodeGroups.append('text')
-      .text(d => d.title.length > 6 ? d.title.slice(0, 6) + '...' : d.title)
+      .text((d: any) => d.title.length > 6 ? d.title.slice(0, 6) + '...' : d.title)
       .attr('text-anchor', 'middle')
-      .attr('dy', d => levelSizes[d.level] + 18)
+      .attr('dy', (d: any) => levelSizes[d.level] + 18)
       .attr('fill', 'currentColor')
       .attr('font-size', '10px')
       .attr('font-weight', '500')
@@ -237,24 +206,17 @@ export function MemoryGalaxy({ compact = false }: MemoryGalaxyProps) {
         .attr('x2', (d: any) => d.target.x)
         .attr('y2', (d: any) => d.target.y);
 
-      nodeGroups
-        .attr('transform', (d: any) => `translate(${d.x},${d.y})`);
+      nodeGroups.attr('transform', (d: any) => `translate(${d.x},${d.y})`);
     });
 
-    return () => {
-      simulation.stop();
-    };
+    return () => { simulation.stop(); };
   }, [nodes]);
 
   return (
     <div className="relative w-full h-full">
-      <svg 
-        ref={svgRef} 
-        className="w-full h-full"
-        style={{ minHeight: compact ? '300px' : '500px' }}
-      />
+      <svg ref={svgRef} className="w-full h-full" style={{ minHeight: compact ? '300px' : '500px' }} />
       
-      {/* 层级图例 */}
+      {/* 图例 */}
       <motion.div 
         initial={{ opacity: 0, x: 20 }}
         animate={{ opacity: 1, x: 0 }}
@@ -262,26 +224,14 @@ export function MemoryGalaxy({ compact = false }: MemoryGalaxyProps) {
         className="absolute top-4 right-4 bg-white/90 dark:bg-slate-800/90 p-3 rounded-xl shadow-lg border border-gray-100 dark:border-slate-700 text-xs backdrop-blur-sm"
       >
         <div className="space-y-2">
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-blue-500 shadow-lg shadow-blue-500/30" />
-            <span>L1 情境记忆</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-amber-500 shadow-lg shadow-amber-500/30" />
-            <span>L2 行为模式</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-purple-500 shadow-lg shadow-purple-500/30" />
-            <span>L3 认知框架</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-red-500 shadow-lg shadow-red-500/30" />
-            <span>L4 核心记忆</span>
-          </div>
+          <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-blue-500" /><span>L1 情境记忆</span></div>
+          <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-amber-500" /><span>L2 行为模式</span></div>
+          <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-purple-500" /><span>L3 认知框架</span></div>
+          <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-red-500" /><span>L4 核心记忆</span></div>
         </div>
       </motion.div>
 
-      {/* 选中节点详情 */}
+      {/* 详情 */}
       <AnimatePresence>
         {selectedNode && (
           <motion.div 
@@ -299,12 +249,7 @@ export function MemoryGalaxy({ compact = false }: MemoryGalaxyProps) {
               }`}>
                 {selectedNode.level}
               </span>
-              <button 
-                onClick={() => setSelectedNode(null)}
-                className="text-gray-400 hover:text-gray-600 w-6 h-6 flex items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors"
-              >
-                ×
-              </button>
+              <button onClick={() => setSelectedNode(null)} className="text-gray-400 hover:text-gray-600">×</button>
             </div>
             <h4 className="font-semibold text-base mb-1">{selectedNode.title}</h4>
             <p className="text-xs text-gray-500 capitalize mb-3">{selectedNode.category}</p>
@@ -317,14 +262,11 @@ export function MemoryGalaxy({ compact = false }: MemoryGalaxyProps) {
                   className={`h-full rounded-full ${
                     selectedNode.level === 'L1' ? 'bg-blue-500' :
                     selectedNode.level === 'L2' ? 'bg-amber-500' :
-                    selectedNode.level === 'L3' ? 'bg-purple-500' :
-                    'bg-red-500'
+                    selectedNode.level === 'L3' ? 'bg-purple-500' : 'bg-red-500'
                   }`}
                 />
               </div>
-              <span className="text-xs text-gray-500 font-medium">
-                {(selectedNode.confidence * 100).toFixed(0)}%
-              </span>
+              <span className="text-xs text-gray-500 font-medium">{(selectedNode.confidence * 100).toFixed(0)}%</span>
             </div>
           </motion.div>
         )}
@@ -333,14 +275,9 @@ export function MemoryGalaxy({ compact = false }: MemoryGalaxyProps) {
       {/* 悬停提示 */}
       <AnimatePresence>
         {hoveredNode && !selectedNode && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             className="absolute bottom-4 left-4 text-xs text-gray-400 bg-white/80 dark:bg-slate-800/80 px-3 py-2 rounded-lg backdrop-blur-sm"
-          >
-            点击查看详情
-          </motion.div>
+          >点击查看详情</motion.div>
         )}
       </AnimatePresence>
     </div>
