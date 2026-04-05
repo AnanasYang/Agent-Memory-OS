@@ -1,417 +1,217 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { IntentNode } from '@/lib/types';
-import { useMemoryStore } from '@/lib/store';
-import { cn } from '@/lib/utils';
-import { 
-  Target, 
-  Clock, 
-  TrendingUp, 
-  CheckCircle2, 
-  Circle, 
-  ArrowRight,
-  Calendar,
-  Tag
-} from 'lucide-react';
+import { Target, Clock, CheckCircle2, ArrowUpRight, TrendingUp } from 'lucide-react';
 
 interface IntentOrbitProps {
-  className?: string;
   compact?: boolean;
 }
 
-const typeConfig = {
-  'short-term': {
-    label: 'Short-term',
-    color: 'text-intent-short',
-    bgColor: 'bg-intent-short/10',
-    borderColor: 'border-intent-short/30',
-    orbitRadius: 120,
-    duration: 20,
-  },
-  'mid-term': {
-    label: 'Mid-term',
-    color: 'text-intent-mid',
-    bgColor: 'bg-intent-mid/10',
-    borderColor: 'border-intent-mid/30',
-    orbitRadius: 200,
-    duration: 35,
-  },
-  'long-term': {
-    label: 'Long-term',
-    color: 'text-intent-long',
-    bgColor: 'bg-intent-long/10',
-    borderColor: 'border-intent-long/30',
-    orbitRadius: 280,
-    duration: 50,
-  },
-};
+export function IntentOrbit({ compact = false }: IntentOrbitProps) {
+  const intents = [
+    { 
+      id: 1, 
+      title: 'Complete VLM project documentation', 
+      progress: 0.75, 
+      deadline: '2026-04-15', 
+      priority: 'high',
+      shortTerm: 3,
+      midTerm: 3,
+      longTerm: 2
+    },
+    { 
+      id: 2, 
+      title: 'Build personal AI assistant infrastructure', 
+      progress: 0.60, 
+      deadline: '2026-08-31', 
+      priority: 'high',
+      shortTerm: 2,
+      midTerm: 4,
+      longTerm: 5
+    },
+    { 
+      id: 3, 
+      title: 'Streamline data pipeline automation', 
+      progress: 0.55, 
+      deadline: '2026-06-30', 
+      priority: 'medium',
+      shortTerm: 1,
+      midTerm: 3,
+      longTerm: 2
+    },
+    { 
+      id: 4, 
+      title: 'Complete MoE architecture deep-dive', 
+      progress: 0.30, 
+      deadline: '2026-07-15', 
+      priority: 'medium',
+      shortTerm: 0,
+      midTerm: 2,
+      longTerm: 3
+    },
+  ];
 
-export function IntentOrbit({ className, compact = false }: IntentOrbitProps) {
-  const { intents, selectedIntentId, setSelectedIntent, getIntentById } = useMemoryStore();
-  const selectedIntent = selectedIntentId ? getIntentById(selectedIntentId) : null;
+  const totalProgress = intents.reduce((sum, i) => sum + i.progress, 0) / intents.length;
 
-  const intentsByType = {
-    'short-term': intents.filter(i => i.type === 'short-term'),
-    'mid-term': intents.filter(i => i.type === 'mid-term'),
-    'long-term': intents.filter(i => i.type === 'long-term'),
-  };
-
-  const activeIntent = intents.reduce((prev, current) => {
-    if (current.progress >= 1) return prev;
-    if (!prev) return current;
-    return current.priority === 'high' && prev.priority !== 'high' ? current :
-           current.progress > prev.progress ? current : prev;
-  }, null as IntentNode | null);
-
-  if (compact) {
-    return (
-      <div className={cn("space-y-4", className)}>
-        {/* Active Intent Card */}
-        {activeIntent && (
-          <div className="bg-card border rounded-lg p-4">
-            <div className="flex items-start gap-3">
-              <div className={cn(
-                "p-2 rounded-lg",
-                typeConfig[activeIntent.type].bgColor
-              )}>
-                <Target className={cn("w-5 h-5", typeConfig[activeIntent.type].color)} />
+  return (
+    <div className="space-y-3">
+      {intents.map((intent, index) => (
+        <motion.div
+          key={intent.id}
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: index * 0.1 }}
+          whileHover={{ scale: 1.02, x: 4 }}
+          className="bg-gradient-to-r from-slate-50 to-white dark:from-slate-700/50 dark:to-slate-800/50 rounded-xl p-4 border border-slate-100 dark:border-slate-600/50 shadow-sm hover:shadow-md transition-all cursor-pointer group"
+        >
+          <div className="flex items-start justify-between mb-3">
+            <div className="flex-1">
+              <div className="flex items-center gap-2 mb-2">
+                <div className={`p-1.5 rounded-lg ${
+                  intent.priority === 'high' 
+                    ? 'bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400' 
+                    : 'bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400'
+                }`}>
+                  <Target className="w-4 h-4" />
+                </div>
+                <span className="font-medium text-sm group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                  {intent.title}
+                </span>
+                <ArrowUpRight className="w-4 h-4 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity" />
               </div>
-              <div className="flex-1 min-w-0">
-                <p className="font-medium truncate">{activeIntent.title}</p>
-                <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground">
-                  <span className={cn("px-1.5 py-0.5 rounded", typeConfig[activeIntent.type].bgColor, typeConfig[activeIntent.type].color)}>
-                    {typeConfig[activeIntent.type].label}
-                  </span>
-                  <span>{(activeIntent.progress * 100).toFixed(0)}%</span>
+              
+              {/* 时间线展示 */}
+              <div className="flex items-center gap-4 text-xs text-gray-500">
+                <span className="flex items-center gap-1.5 bg-gray-100 dark:bg-slate-700 px-2 py-1 rounded-full">
+                  <Clock className="w-3 h-3" />
+                  {intent.deadline}
+                </span>
+                <span className={`px-2 py-1 rounded-full font-medium ${
+                  intent.priority === 'high' 
+                    ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' 
+                    : 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'
+                }`}>
+                  {intent.priority}
+                </span>
+              </div>
+            </div>
+            
+            {/* 进度圆形指示器 */}
+            <div className="flex flex-col items-end gap-1">
+              <div className="relative w-12 h-12">
+                <svg className="w-12 h-12 transform -rotate-90">
+                  <circle
+                    cx="24"
+                    cy="24"
+                    r="20"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="3"
+                    className="text-gray-100 dark:text-slate-700"
+                  />
+                  <motion.circle
+                    cx="24"
+                    cy="24"
+                    r="20"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="3"
+                    strokeLinecap="round"
+                    strokeDasharray={`${2 * Math.PI * 20}`}
+                    initial={{ strokeDashoffset: `${2 * Math.PI * 20}` }}
+                    animate={{ strokeDashoffset: `${2 * Math.PI * 20 * (1 - intent.progress)}` }}
+                    transition={{ duration: 1, delay: 0.5 + index * 0.1 }}
+                    className={`${
+                      intent.progress >= 0.7 ? 'text-green-500' :
+                      intent.progress >= 0.4 ? 'text-blue-500' :
+                      'text-amber-500'
+                    }`}
+                  />
+                </svg>
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <span className="text-xs font-bold">{(intent.progress * 100).toFixed(0)}%</span>
                 </div>
               </div>
             </div>
           </div>
-        )}
 
-        {/* Quick Stats */}
-        <div className="grid grid-cols-3 gap-2">
-          {(['short-term', 'mid-term', 'long-term'] as const).map(type => (
-            <div 
-              key={type} 
-              className={cn(
-                "text-center p-2 rounded-lg border",
-                typeConfig[type].borderColor,
-                typeConfig[type].bgColor
-              )}
-            >
-              <p className={cn("text-lg font-bold", typeConfig[type].color)}>
-                {intentsByType[type].length}
-              </p>
-              <p className="text-xs text-muted-foreground">
-                {typeConfig[type].label}
-              </p>
+          {/* 进度条 */}
+          <div className="h-2 bg-gray-100 dark:bg-slate-700 rounded-full overflow-hidden mb-3">
+            <motion.div 
+              initial={{ width: 0 }}
+              animate={{ width: `${intent.progress * 100}%` }}
+              transition={{ duration: 0.8, delay: 0.3 + index * 0.1 }}
+              className={`h-full rounded-full ${
+                intent.progress >= 0.7 ? 'bg-gradient-to-r from-green-400 to-green-500' :
+                intent.progress >= 0.4 ? 'bg-gradient-to-r from-blue-400 to-blue-500' :
+                'bg-gradient-to-r from-amber-400 to-amber-500'
+              }`}
+            />
+          </div>
+
+          {/* 时间分布标签 */}
+          <div className="flex gap-2">
+            <TimeTag count={intent.shortTerm} label="Short-term" color="green" />
+            <TimeTag count={intent.midTerm} label="Mid-term" color="blue" />
+            <TimeTag count={intent.longTerm} label="Long-term" color="rose" />
+          </div>
+        </motion.div>
+      ))}
+
+      {/* 总体统计 */}
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.5 }}
+        className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-xl p-4 border border-blue-100 dark:border-blue-800/30"
+      >
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-white dark:bg-slate-800 rounded-lg shadow-sm">
+              <TrendingUp className="w-5 h-5 text-blue-500" />
             </div>
-          ))}
+            <div>
+              <p className="text-sm font-medium">总体进度</p>
+              <p className="text-xs text-gray-500">{intents.length} 个活跃目标</p>
+            </div>
+          </div>
+          <div className="text-right">
+            <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+              {(totalProgress * 100).toFixed(0)}%
+            </div>
+            <div className="flex items-center gap-1 text-xs text-green-600">
+              <CheckCircle2 className="w-3 h-3" />
+              按计划进行
+            </div>
+          </div>
         </div>
-      </div>
-    );
-  }
+        
+        {/* 总体进度条 */}
+        <div className="h-2 bg-gray-200 dark:bg-slate-700 rounded-full overflow-hidden mt-3">
+          <motion.div 
+            initial={{ width: 0 }}
+            animate={{ width: `${totalProgress * 100}%` }}
+            transition={{ duration: 1, delay: 0.7 }}
+            className="h-full rounded-full bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500"
+          />
+        </div>
+      </motion.div>
+    </div>
+  );
+}
+
+// 时间标签组件
+function TimeTag({ count, label, color }: { count: number; label: string; color: 'green' | 'blue' | 'rose' }) {
+  const colorClasses = {
+    green: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 border-green-200',
+    blue: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 border-blue-200',
+    rose: 'bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400 border-rose-200'
+  };
 
   return (
-    <div className={cn("relative", className)}>
-      {/* Orbit Visualization */}
-      <div className="relative flex items-center justify-center" style={{ height: 650 }}>
-        {/* Central Hub - Active Intent */}
-        <motion.div 
-          className="absolute z-20 flex flex-col items-center"
-          animate={{ scale: [1, 1.05, 1] }}
-          transition={{ duration: 3, repeat: Infinity }}
-        >
-          <div className="w-32 h-32 rounded-full bg-gradient-to-br from-primary to-primary/50 flex items-center justify-center shadow-lg shadow-primary/30">
-            <div className="text-center p-4">
-              <Target className="w-6 h-6 mx-auto mb-1 text-primary-foreground" />
-              <p className="text-xs font-medium text-primary-foreground/80">Active</p>
-            </div>
-          </div>
-          {activeIntent && (
-            <motion.div 
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="absolute -bottom-16 w-48 text-center"
-            >
-              <p className="font-medium text-sm truncate">{activeIntent.title}</p>
-              <div className="w-full bg-muted rounded-full h-1.5 mt-2">
-                <div 
-                  className="bg-primary rounded-full h-1.5 transition-all"
-                  style={{ width: `${activeIntent.progress * 100}%` }}
-                />
-              </div>
-            </motion.div>
-          )}
-        </motion.div>
-
-        {/* Orbital Rings */}
-        {(['long-term', 'mid-term', 'short-term'] as const).map((type, index) => {
-          const config = typeConfig[type];
-          const typeIntents = intentsByType[type];
-          
-          return (
-            <div key={type}>
-              {/* Orbit Ring */}
-              <div 
-                className={cn(
-                  "absolute rounded-full border-2 border-dashed",
-                  config.borderColor
-                )}
-                style={{
-                  width: config.orbitRadius * 2,
-                  height: config.orbitRadius * 2,
-                }}
-              />
-              
-              {/* Orbiting Satellites */}
-              {typeIntents.map((intent, i) => {
-                const angle = (i / Math.max(typeIntents.length, 1)) * 360;
-                const isSelected = selectedIntentId === intent.id;
-                
-                return (
-                  <motion.div
-                    key={intent.id}
-                    className={cn(
-                      "absolute cursor-pointer transition-all",
-                      isSelected && "z-10"
-                    )}
-                    style={{
-                      '--orbit-radius': `${config.orbitRadius}px`,
-                      '--orbit-duration': `${config.duration}s`,
-                    } as React.CSSProperties}
-                    animate={{ 
-                      rotate: 360,
-                    }}
-                    transition={{
-                      duration: config.duration,
-                      repeat: Infinity,
-                      ease: "linear",
-                      delay: i * (config.duration / typeIntents.length),
-                    }}
-                    onClick={() => setSelectedIntent(intent.id)}
-                  >
-                    <div 
-                      className={cn(
-                        "relative -translate-x-1/2 -translate-y-1/2",
-                        isSelected && "scale-125"
-                      )}
-                      style={{
-                        transform: `translateX(${config.orbitRadius}px)`,
-                      }}
-                    >
-                      <motion.div 
-                        className={cn(
-                          "w-10 h-10 rounded-full flex items-center justify-center border-2",
-                          config.bgColor,
-                          config.borderColor,
-                          isSelected && "ring-2 ring-offset-2 ring-offset-background",
-                          isSelected && config.color.replace('text-', 'ring-')
-                        )}
-                        style={{
-                          boxShadow: intent.progress >= 1 
-                            ? `0 0 20px ${type === 'short-term' ? '#34d399' : type === 'mid-term' ? '#60a5fa' : '#f87171'}`
-                            : undefined
-                        }}
-                        animate={{ rotate: -360 }}
-                        transition={{
-                          duration: config.duration,
-                          repeat: Infinity,
-                          ease: "linear",
-                          delay: i * (config.duration / typeIntents.length),
-                        }}
-                      >
-                        {intent.progress >= 1 ? (
-                          <CheckCircle2 className={cn("w-5 h-5", config.color)} />
-                        ) : (
-                          <Circle className={cn("w-5 h-5", config.color)} />
-                        )}
-                      </motion.div>
-                      
-                      {/* Progress indicator */}
-                      <svg 
-                        className="absolute inset-0 w-10 h-10 -rotate-90"
-                        viewBox="0 0 40 40"
-                      >
-                        <circle
-                          cx="20"
-                          cy="20"
-                          r="18"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeDasharray={`${intent.progress * 113} 113`}
-                          className={cn("opacity-50", config.color)}
-                        />
-                      </svg>
-                    </div>
-                  </motion.div>
-                );
-              })}
-            </div>
-          );
-        })}
-      </div>
-
-      {/* Intent List */}
-      <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
-        {(['short-term', 'mid-term', 'long-term'] as const).map(type => (
-          <div key={type} className="space-y-3">
-            <h3 className={cn("font-semibold flex items-center gap-2", typeConfig[type].color)}>
-              <Clock className="w-4 h-4" />
-              {typeConfig[type].label}
-            </h3>
-            <div className="space-y-2">
-              {intentsByType[type].map(intent => (
-                <motion.div
-                  key={intent.id}
-                  className={cn(
-                    "p-3 rounded-lg border cursor-pointer transition-all",
-                    selectedIntentId === intent.id 
-                      ? cn(typeConfig[type].borderColor, typeConfig[type].bgColor)
-                      : "border-muted hover:border-muted-foreground/30"
-                  )}
-                  whileHover={{ scale: 1.02 }}
-                  onClick={() => setSelectedIntent(intent.id)}
-                >
-                  <div className="flex items-start gap-2">
-                    {intent.progress >= 1 ? (
-                      <CheckCircle2 className={cn("w-4 h-4 mt-0.5", typeConfig[type].color)} />
-                    ) : (
-                      <Circle className={cn("w-4 h-4 mt-0.5", typeConfig[type].color)} />
-                    )}
-                    <div className="flex-1 min-w-0">
-                      <p className={cn(
-                        "text-sm font-medium truncate",
-                        intent.progress >= 1 && "line-through opacity-60"
-                      )}>
-                        {intent.title}
-                      </p>
-                      <div className="flex items-center gap-2 mt-1">
-                        <div className="flex-1 bg-muted rounded-full h-1">
-                          <div 
-                            className={cn(
-                              "rounded-full h-1 transition-all",
-                              typeConfig[type].color.replace('text-', 'bg-')
-                            )}
-                            style={{ width: `${intent.progress * 100}%` }}
-                          />
-                        </div>
-                        <span className="text-xs text-muted-foreground">
-                          {(intent.progress * 100).toFixed(0)}%
-                        </span>
-                      </div>
-                      {intent.deadline && (
-                        <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
-                          <Calendar className="w-3 h-3" />
-                          {new Date(intent.deadline).toLocaleDateString()}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* Selected Intent Detail */}
-      {selectedIntent && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className={cn(
-            "mt-6 p-6 rounded-lg border",
-            typeConfig[selectedIntent.type].bgColor,
-            typeConfig[selectedIntent.type].borderColor
-          )}
-        >
-          <div className="flex items-start justify-between">
-            <div>
-              <div className="flex items-center gap-2 mb-2">
-                <span className={cn(
-                  "px-2 py-0.5 rounded text-xs font-medium",
-                  "bg-background",
-                  typeConfig[selectedIntent.type].color
-                )}>
-                  {typeConfig[selectedIntent.type].label}
-                </span>
-                {selectedIntent.priority && (
-                  <span className={cn(
-                    "px-2 py-0.5 rounded text-xs font-medium",
-                    selectedIntent.priority === 'high' ? "bg-red-500/20 text-red-500" :
-                    selectedIntent.priority === 'medium' ? "bg-yellow-500/20 text-yellow-500" :
-                    "bg-green-500/20 text-green-500"
-                  )}>
-                    {selectedIntent.priority}
-                  </span>
-                )}
-              </div>
-              <h3 className="text-lg font-semibold">{selectedIntent.title}</h3>
-              {selectedIntent.description && (
-                <p className="text-muted-foreground mt-1">{selectedIntent.description}</p>
-              )}
-            </div>
-            <button 
-              onClick={() => setSelectedIntent(null)}
-              className="p-1 hover:bg-background rounded"
-            >
-              ×
-            </button>
-          </div>
-          
-          <div className="mt-4">
-            <div className="flex items-center justify-between text-sm mb-1">
-              <span>Progress</span>
-              <span className="font-medium">{(selectedIntent.progress * 100).toFixed(0)}%</span>
-            </div>
-            <div className="bg-background rounded-full h-2">
-              <div 
-                className={cn(
-                  "rounded-full h-2 transition-all",
-                  typeConfig[selectedIntent.type].color.replace('text-', 'bg-')
-                )}
-                style={{ width: `${selectedIntent.progress * 100}%` }}
-              />
-            </div>
-          </div>
-
-          <div className="mt-4 flex flex-wrap gap-2">
-            {selectedIntent.tags?.map(tag => (
-              <span 
-                key={tag} 
-                className="text-xs px-2 py-1 bg-background rounded-full flex items-center gap-1"
-              >
-                <Tag className="w-3 h-3" />
-                {tag}
-              </span>
-            ))}
-          </div>
-
-          {selectedIntent.dependencies.length > 0 && (
-            <div className="mt-4 pt-4 border-t">
-              <p className="text-sm font-medium mb-2">Dependencies</p>
-              <div className="flex flex-wrap gap-2">
-                {selectedIntent.dependencies.map(depId => {
-                  const dep = getIntentById(depId);
-                  return dep ? (
-                    <span 
-                      key={depId}
-                      className="text-xs px-2 py-1 bg-background rounded flex items-center gap-1"
-                    >
-                      <ArrowRight className="w-3 h-3" />
-                      {dep.title}
-                    </span>
-                  ) : null;
-                })}
-              </div>
-            </div>
-          )}
-        </motion.div>
-      )}
+    <div className={`flex items-center gap-1 px-2 py-1 rounded-lg text-xs border ${colorClasses[color]}`}>
+      <span className="font-bold">{count}</span>
+      <span className="opacity-70">{label}</span>
     </div>
   );
 }
