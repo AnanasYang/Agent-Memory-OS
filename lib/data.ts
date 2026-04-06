@@ -1,5 +1,5 @@
 // Auto-generated from ai-memory-system
-// Synced at: 2026-04-06T03:30:01.869Z
+// Synced at: 2026-04-06T15:30:01.827Z
 
 export const memoryNodes = [
   {
@@ -32,8 +32,8 @@ export const memoryNodes = [
     "updated": "2026-03-06",
     "reviewed": "2026-03-16",
     "position": {
-      "x": 150.00000000000003,
-      "y": 259.8076211353316
+      "x": 187.04694055762008,
+      "y": 234.54944474040894
     }
   },
   {
@@ -49,8 +49,8 @@ export const memoryNodes = [
     "updated": "2026-03-11",
     "reviewed": null,
     "position": {
-      "x": -149.99999999999994,
-      "y": 259.8076211353316
+      "x": -66.7562801868943,
+      "y": 292.4783736545471
     }
   },
   {
@@ -66,8 +66,8 @@ export const memoryNodes = [
     "updated": "2026-04-02",
     "reviewed": "2026-04-02",
     "position": {
-      "x": -300,
-      "y": 3.6739403974420595e-14
+      "x": -270.29066037072573,
+      "y": 130.16512173526746
     }
   },
   {
@@ -83,8 +83,8 @@ export const memoryNodes = [
     "updated": "2026-04-03",
     "reviewed": null,
     "position": {
-      "x": -150.00000000000014,
-      "y": -259.80762113533154
+      "x": -270.29066037072573,
+      "y": -130.1651217352674
     }
   },
   {
@@ -100,8 +100,25 @@ export const memoryNodes = [
     "updated": "2026-04-05",
     "reviewed": null,
     "position": {
-      "x": 149.9999999999998,
-      "y": -259.8076211353317
+      "x": -66.75628018689437,
+      "y": -292.4783736545471
+    }
+  },
+  {
+    "id": "l1-2026-04-06-daily-dream",
+    "title": "2026-04-06-daily-dream",
+    "level": "L1",
+    "content": "# 2026-04-06 会话回顾\n\n## 统计\n- 用户消息: 4\n- AI 回复: 20\n- 总会话数: 39\n\n## 溯源信息\n- **Memory ID**: L1-2026-04-06-001\n- **L0 来源**: 39 个会话\n- **时间范围**: 2026/4/6 09:00:00 - 2026/4/6 23:01:43\n- **消息总数**: 39\n\n## 一句话总结\n今日进行了 4 轮对话，持续约 782 分钟，主要围绕 记忆系统、AI 技术、任务管理、编程、日程、目标 展开。\n\n## 关键主题\n- 记忆系统\n- AI 技术\n- 任务管理\n- 编程\n- 日程\n- 目标\n\n## 重要对话片段\n### 09:00:14\n**AI**: ---\nlevel: L2\ncategory: work-habit\ncreated: 2026-03-05\nupdated: 2026-03-08\nsource: 对话观察（记忆系统初始化 + 多智能体项目设计）\nconfidence: high\nreviewed: 2026-03-08\nnext-review: 2026-04-0",
+    "confidence": 0.8,
+    "category": "episodic",
+    "sources": [],
+    "connections": [],
+    "created": "2026-04-06",
+    "updated": "2026-04-06",
+    "reviewed": "2026-04-06",
+    "position": {
+      "x": 187.04694055762002,
+      "y": -234.54944474040897
     }
   },
   {
@@ -227,8 +244,8 @@ export const memoryNodes = [
 
 export const systemStatus = {
   activeTasks: 0,
-  memoryNodes: 13,
+  memoryNodes: 14,
   activeIntents: 0,
-  lastSync: "2026-04-06T03:30:01.869Z",
+  lastSync: "2026-04-06T15:30:01.827Z",
   systemLoad: 0
 };
