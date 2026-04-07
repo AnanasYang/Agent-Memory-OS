@@ -1,9 +1,7 @@
-import type { MemoryNode, IntentNode } from "./types";
-
 // Auto-generated from ai-memory-system
-// Synced at: 2026-04-07T09:30:01.142Z
+// Synced at: 2026-04-07T10:00:01.193Z
 
-export const memoryNodes: MemoryNode[] = [
+export const memoryNodes = [
   {
     "id": "l1-2026-03-05-memory-system-init",
     "title": "2026-03-05-memory-system-init",
@@ -49,7 +47,7 @@ export const memoryNodes: MemoryNode[] = [
     "connections": [],
     "created": "2026-03-11",
     "updated": "2026-03-11",
-    "reviewed": "",
+    "reviewed": null,
     "position": {
       "x": -66.7562801868943,
       "y": 292.4783736545471
@@ -83,7 +81,7 @@ export const memoryNodes: MemoryNode[] = [
     "connections": [],
     "created": "2026-04-03",
     "updated": "2026-04-03",
-    "reviewed": "",
+    "reviewed": null,
     "position": {
       "x": -270.29066037072573,
       "y": -130.1651217352674
@@ -100,7 +98,7 @@ export const memoryNodes: MemoryNode[] = [
     "connections": [],
     "created": "2026-04-05",
     "updated": "2026-04-05",
-    "reviewed": "",
+    "reviewed": null,
     "position": {
       "x": -66.75628018689437,
       "y": -292.4783736545471
@@ -134,7 +132,7 @@ export const memoryNodes: MemoryNode[] = [
     "connections": [],
     "created": "2026-03-11",
     "updated": "2026-03-11",
-    "reviewed": "",
+    "reviewed": null,
     "position": {
       "x": 200,
       "y": 0
@@ -151,7 +149,7 @@ export const memoryNodes: MemoryNode[] = [
     "connections": [],
     "created": "2026-03-11",
     "updated": "2026-04-02",
-    "reviewed": "",
+    "reviewed": null,
     "position": {
       "x": 1.2246467991473532e-14,
       "y": 200
@@ -168,7 +166,7 @@ export const memoryNodes: MemoryNode[] = [
     "connections": [],
     "created": "2026-03-11",
     "updated": "2026-03-11",
-    "reviewed": "",
+    "reviewed": null,
     "position": {
       "x": -200,
       "y": 2.4492935982947064e-14
@@ -248,14 +246,6 @@ export const systemStatus = {
   activeTasks: 0,
   memoryNodes: 14,
   activeIntents: 0,
-  lastSync: "2026-04-07T09:30:01.142Z",
+  lastSync: "2026-04-07T10:00:01.193Z",
   systemLoad: 0
 };
-
-
-export const intentNodes: IntentNode[] = [
-  { id: "intent-001", type: "short-term", title: "Complete VLM project documentation", description: "Finish documentation for VLM project", progress: 0.75, dependencies: [], created: "2026-03-01", deadline: "2026-04-15", priority: "high", tags: ["documentation", "vlm"] },
-  { id: "intent-002", type: "mid-term", title: "Build personal AI assistant infrastructure", description: "Set up infrastructure for personal AI assistant", progress: 0.60, dependencies: [], created: "2026-03-01", deadline: "2026-08-31", priority: "high", tags: ["infrastructure", "ai"] },
-  { id: "intent-003", type: "mid-term", title: "Streamline data pipeline automation", description: "Automate data pipeline processes", progress: 0.55, dependencies: [], created: "2026-03-01", deadline: "2026-06-30", priority: "medium", tags: ["automation", "data"] },
-  { id: "intent-004", type: "long-term", title: "Complete MoE architecture deep-dive", description: "Deep dive into Mixture of Experts architecture", progress: 0.30, dependencies: [], created: "2026-03-01", deadline: "2026-07-15", priority: "medium", tags: ["research", "moe"] }
-];
