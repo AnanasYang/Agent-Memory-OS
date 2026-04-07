@@ -1,118 +1,58 @@
 import { NextResponse } from 'next/server';
-import { readFileSync, readdirSync, existsSync } from 'fs';
-import { join } from 'path';
-
-const DREAMS_DIR = '/home/bruce/.openclaw/workspace/agent-memory-os/memory/dreams';
-const DAILY_DIR = join(DREAMS_DIR, 'daily');
-
-interface DreamSummary {
-  id: string;
-  date: string;
-  timestamp: number;
-  summary: string;
-  sessionCount: number;
-  l1Count: number;
-  status: 'success' | 'error' | 'running';
-}
+import { getDreams, getWeeklyReviews } from '@/lib/unified-data';
 
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const date = searchParams.get('date');
+    const type = searchParams.get('type') || 'daily'; // 'daily' | 'weekly'
     const limit = parseInt(searchParams.get('limit') || '30');
     
-    if (date) {
-      return getDreamDetail(date);
+    if (type === 'weekly') {
+      const reviews = await getWeeklyReviews();
+      
+      if (date) {
+        const review = reviews.find(r => r.date === date || r.week === date);
+        if (!review) {
+          return NextResponse.json(
+            { error: 'Review not found', date },
+            { status: 404 }
+          );
+        }
+        return NextResponse.json(review);
+      }
+      
+      return NextResponse.json({
+        reviews: reviews.slice(0, limit),
+        count: reviews.length,
+        lastUpdated: new Date().toISOString()
+      });
     }
     
-    return getDreamList(limit);
+    // Daily dreams
+    const dreams = await getDreams(limit);
+    
+    if (date) {
+      const dream = dreams.find(d => d.date === date);
+      if (!dream) {
+        return NextResponse.json(
+          { error: 'Dream not found', date },
+          { status: 404 }
+        );
+      }
+      return NextResponse.json(dream);
+    }
+    
+    return NextResponse.json({
+      dreams,
+      count: dreams.length,
+      lastUpdated: new Date().toISOString()
+    });
     
   } catch (error) {
     console.error('Failed to fetch dreams:', error);
     return NextResponse.json(
       { error: 'Failed to fetch dreams', dreams: [] },
-      { status: 500 }
-    );
-  }
-}
-
-function getDreamList(limit: number) {
-  console.log('Reading dreams from:', DAILY_DIR);
-  
-  if (!existsSync(DAILY_DIR)) {
-    console.log('Dreams directory does not exist');
-    return NextResponse.json({ dreams: [], count: 0 });
-  }
-  
-  const files = readdirSync(DAILY_DIR)
-    .filter(f => f.endsWith('-dream.json'))
-    .sort()
-    .reverse()
-    .slice(0, limit);
-  
-  console.log('Found dream files:', files.length);
-  
-  const dreams: DreamSummary[] = files.map(filename => {
-    try {
-      const filepath = join(DAILY_DIR, filename);
-      const content = readFileSync(filepath, 'utf-8');
-      const data = JSON.parse(content);
-      
-      return {
-        id: data.id || filename.replace('-dream.json', ''),
-        date: data.date,
-        timestamp: data.timestamp,
-        summary: data.insights?.summary || data.summary || '无摘要',
-        sessionCount: data.sessions || data.dataSource?.uniqueSessions || 0,
-        l1Count: data.l1Memories?.length || 0,
-        status: 'success'
-      };
-    } catch (e) {
-      const dateStr = filename.replace('-dream.json', '');
-      return {
-        id: filename.replace('-dream.json', ''),
-        date: dateStr,
-        timestamp: 0,
-        summary: '解析失败',
-        sessionCount: 0,
-        l1Count: 0,
-        status: 'error'
-      };
-    }
-  });
-  
-  return NextResponse.json({
-    dreams,
-    count: dreams.length,
-    lastUpdated: Date.now()
-  });
-}
-
-function getDreamDetail(date: string) {
-  const jsonPath = join(DAILY_DIR, `${date}-dream.json`);
-  const mdPath = join(DAILY_DIR, `${date}-dream.md`);
-  
-  if (!existsSync(jsonPath)) {
-    return NextResponse.json(
-      { error: 'Dream not found', date },
-      { status: 404 }
-    );
-  }
-  
-  try {
-    const content = readFileSync(jsonPath, 'utf-8');
-    const data = JSON.parse(content);
-    
-    let markdown = null;
-    if (existsSync(mdPath)) {
-      markdown = readFileSync(mdPath, 'utf-8');
-    }
-    
-    return NextResponse.json({ ...data, markdown });
-    
-  } catch (error) {
-    return NextResponse.json(
-      { error: 'Failed to parse dream data', date },
       { status: 500 }
     );
   }
