@@ -1,7 +1,9 @@
-// Auto-generated from ai-memory-system
-// Synced at: 2026-04-07T06:30:01.847Z
+import type { MemoryNode, IntentNode } from "./types";
 
-export const memoryNodes = [
+// Auto-generated from ai-memory-system
+// Synced at: 2026-04-07T09:30:01.142Z
+
+export const memoryNodes: MemoryNode[] = [
   {
     "id": "l1-2026-03-05-memory-system-init",
     "title": "2026-03-05-memory-system-init",
@@ -47,7 +49,7 @@ export const memoryNodes = [
     "connections": [],
     "created": "2026-03-11",
     "updated": "2026-03-11",
-    "reviewed": null,
+    "reviewed": "",
     "position": {
       "x": -66.7562801868943,
       "y": 292.4783736545471
@@ -81,7 +83,7 @@ export const memoryNodes = [
     "connections": [],
     "created": "2026-04-03",
     "updated": "2026-04-03",
-    "reviewed": null,
+    "reviewed": "",
     "position": {
       "x": -270.29066037072573,
       "y": -130.1651217352674
@@ -98,7 +100,7 @@ export const memoryNodes = [
     "connections": [],
     "created": "2026-04-05",
     "updated": "2026-04-05",
-    "reviewed": null,
+    "reviewed": "",
     "position": {
       "x": -66.75628018689437,
       "y": -292.4783736545471
@@ -132,7 +134,7 @@ export const memoryNodes = [
     "connections": [],
     "created": "2026-03-11",
     "updated": "2026-03-11",
-    "reviewed": null,
+    "reviewed": "",
     "position": {
       "x": 200,
       "y": 0
@@ -149,7 +151,7 @@ export const memoryNodes = [
     "connections": [],
     "created": "2026-03-11",
     "updated": "2026-04-02",
-    "reviewed": null,
+    "reviewed": "",
     "position": {
       "x": 1.2246467991473532e-14,
       "y": 200
@@ -166,7 +168,7 @@ export const memoryNodes = [
     "connections": [],
     "created": "2026-03-11",
     "updated": "2026-03-11",
-    "reviewed": null,
+    "reviewed": "",
     "position": {
       "x": -200,
       "y": 2.4492935982947064e-14
@@ -246,50 +248,14 @@ export const systemStatus = {
   activeTasks: 0,
   memoryNodes: 14,
   activeIntents: 0,
-  lastSync: "2026-04-07T06:30:01.848Z",
+  lastSync: "2026-04-07T09:30:01.142Z",
   systemLoad: 0
 };
 
-// 添加 intentNodes 导出以修复构建错误
-export const intentNodes = [
-  {
-    id: "intent-001",
-    title: "Complete VLM project documentation",
-    description: "Finish documentation for the VLM project",
-    progress: 0.75,
-    deadline: "2026-04-15",
-    priority: "high",
-    timeframe: "short-term",
-    status: "active"
-  },
-  {
-    id: "intent-002",
-    title: "Build personal AI assistant infrastructure",
-    description: "Create infrastructure for personal AI assistant",
-    progress: 0.60,
-    deadline: "2026-08-31",
-    priority: "high",
-    timeframe: "mid-term",
-    status: "active"
-  },
-  {
-    id: "intent-003",
-    title: "Streamline data pipeline automation",
-    description: "Automate data pipeline processes",
-    progress: 0.55,
-    deadline: "2026-06-30",
-    priority: "medium",
-    timeframe: "mid-term",
-    status: "active"
-  },
-  {
-    id: "intent-004",
-    title: "Complete MoE architecture deep-dive",
-    description: "Deep dive into Mixture of Experts architecture",
-    progress: 0.30,
-    deadline: "2026-07-15",
-    priority: "medium",
-    timeframe: "long-term",
-    status: "active"
-  }
+
+export const intentNodes: IntentNode[] = [
+  { id: "intent-001", type: "short-term", title: "Complete VLM project documentation", description: "Finish documentation for VLM project", progress: 0.75, dependencies: [], created: "2026-03-01", deadline: "2026-04-15", priority: "high", tags: ["documentation", "vlm"] },
+  { id: "intent-002", type: "mid-term", title: "Build personal AI assistant infrastructure", description: "Set up infrastructure for personal AI assistant", progress: 0.60, dependencies: [], created: "2026-03-01", deadline: "2026-08-31", priority: "high", tags: ["infrastructure", "ai"] },
+  { id: "intent-003", type: "mid-term", title: "Streamline data pipeline automation", description: "Automate data pipeline processes", progress: 0.55, dependencies: [], created: "2026-03-01", deadline: "2026-06-30", priority: "medium", tags: ["automation", "data"] },
+  { id: "intent-004", type: "long-term", title: "Complete MoE architecture deep-dive", description: "Deep dive into Mixture of Experts architecture", progress: 0.30, dependencies: [], created: "2026-03-01", deadline: "2026-07-15", priority: "medium", tags: ["research", "moe"] }
 ];
