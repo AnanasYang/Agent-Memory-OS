@@ -1,8 +1,7 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { getActivityData } from '@/lib/unified-data';
 import { cn } from '@/lib/utils';
 import { 
   Calendar, 
@@ -15,6 +14,12 @@ import {
   X
 } from 'lucide-react';
 import Link from 'next/link';
+
+interface ActivityData {
+  date: string;
+  count: number;
+  level: 'L0' | 'L1' | 'L2' | 'L3' | 'L4';
+}
 
 const levelColors = {
   L0: 'bg-blue-500',
@@ -40,7 +45,7 @@ interface DayCell {
   count: number;
   level: 'L0' | 'L1' | 'L2' | 'L3' | 'L4';
   month: number;
-  dayOfWeek: number; // 0=周一, 6=周日
+  dayOfWeek: number;
   weekIndex: number;
 }
 
@@ -48,9 +53,22 @@ export function EvolutionTimeline({ className }: { className?: string }) {
   const [selectedLevel, setSelectedLevel] = useState<string | 'all'>('all');
   const [viewMode, setViewMode] = useState<'heatmap' | 'list'>('heatmap');
   const [selectedDate, setSelectedDate] = useState<DayCell | null>(null);
+  const [rawActivities, setRawActivities] = useState<ActivityData[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  // 获取真实活动数据
-  const rawActivities = useMemo(() => getActivityData(), []);
+  // 从 API 获取活动数据
+  useEffect(() => {
+    fetch('/api/unified-data')
+      .then(res => res.json())
+      .then(data => {
+        setRawActivities(data.activities || []);
+        setLoading(false);
+      })
+      .catch(() => {
+        setRawActivities([]);
+        setLoading(false);
+      });
+  }, []);
 
   const filteredActivities = useMemo(() => {
     if (selectedLevel === 'all') return rawActivities;
@@ -62,10 +80,9 @@ export function EvolutionTimeline({ className }: { className?: string }) {
     const today = new Date();
     const oneYearAgo = new Date(today);
     oneYearAgo.setFullYear(today.getFullYear() - 1);
-    oneYearAgo.setDate(oneYearAgo.getDate() - oneYearAgo.getDay() + 1); // 调整到周一开始
+    oneYearAgo.setDate(oneYearAgo.getDate() - oneYearAgo.getDay() + 1);
 
-    // 创建日期映射
-    const activityMap = new Map<string, typeof rawActivities[0]>();
+    const activityMap = new Map<string, ActivityData>();
     filteredActivities.forEach(a => {
       const existing = activityMap.get(a.date);
       if (!existing || a.count > existing.count) {
@@ -73,15 +90,13 @@ export function EvolutionTimeline({ className }: { className?: string }) {
       }
     });
 
-    // 生成过去一年的所有日期
     const gridData: DayCell[] = [];
     const currentDate = new Date(oneYearAgo);
     let weekIndex = 0;
 
     while (currentDate <= today) {
       const dateStr = currentDate.toISOString().split('T')[0];
-      const dayOfWeek = currentDate.getDay(); // 0=周日, 1=周一, ...
-      // 转换为: 0=周一, 6=周日
+      const dayOfWeek = currentDate.getDay();
       const adjustedDayOfWeek = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
 
       const activity = activityMap.get(dateStr);
@@ -95,7 +110,6 @@ export function EvolutionTimeline({ className }: { className?: string }) {
         weekIndex,
       });
 
-      // 如果是周日，进入下一周
       if (dayOfWeek === 0) {
         weekIndex++;
       }
@@ -103,12 +117,10 @@ export function EvolutionTimeline({ className }: { className?: string }) {
       currentDate.setDate(currentDate.getDate() + 1);
     }
 
-    // 计算月份标签位置
     const monthLabels: Array<{ label: string; weekIndex: number }> = [];
     let currentMonth = -1;
     
-    gridData.forEach((cell, index) => {
-      // 只在每周一检查月份变化
+    gridData.forEach((cell) => {
       if (cell.dayOfWeek === 0) {
         const month = cell.month;
         if (month !== currentMonth) {
@@ -126,7 +138,6 @@ export function EvolutionTimeline({ className }: { className?: string }) {
     return { gridData, monthLabels, maxCount };
   }, [filteredActivities]);
 
-  // 按周组织数据 (7行 x N列)
   const weeklyGrid = useMemo(() => {
     const maxWeekIndex = Math.max(...gridData.map(d => d.weekIndex), 0);
     const weeks: DayCell[][] = Array.from({ length: maxWeekIndex + 1 }, () => []);
@@ -138,29 +149,12 @@ export function EvolutionTimeline({ className }: { className?: string }) {
       weeks[cell.weekIndex][cell.dayOfWeek] = cell;
     });
 
-    // 填充缺失的天
-    weeks.forEach((week, weekIdx) => {
-      for (let day = 0; day < 7; day++) {
-        if (!week[day]) {
-          // 找到最近的日期来填充
-          const refCell = gridData.find(c => c.weekIndex === weekIdx && c.dayOfWeek === day);
-          if (refCell) {
-            week[day] = refCell;
-          }
-        }
-      }
-    });
-
     return weeks;
   }, [gridData]);
 
   const getIntensity = (count: number) => {
     if (count === 0) return 'bg-slate-100 dark:bg-slate-800';
-    const intensity = Math.min(count / maxCount, 1);
-    if (intensity <= 0.25) return 'bg-emerald-200 dark:bg-emerald-900';
-    if (intensity <= 0.5) return 'bg-emerald-300 dark:bg-emerald-700';
-    if (intensity <= 0.75) return 'bg-emerald-400 dark:bg-emerald-600';
-    return 'bg-emerald-500 dark:bg-emerald-500';
+    return 'bg-emerald-400 dark:bg-emerald-600';
   };
 
   const stats = useMemo(() => ({
@@ -174,6 +168,14 @@ export function EvolutionTimeline({ className }: { className?: string }) {
       L4: filteredActivities.filter(a => a.level === 'L4').reduce((s, a) => s + a.count, 0),
     }
   }), [filteredActivities, maxCount]);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-sm text-gray-500">加载中...</div>
+      </div>
+    );
+  }
 
   return (
     <div className={cn("space-y-6", className)}>
@@ -333,8 +335,7 @@ export function EvolutionTimeline({ className }: { className?: string }) {
             <span>少</span>
             <div className="flex gap-[3px]">
               <div className="w-[10px] h-[10px] rounded-sm bg-slate-100 dark:bg-slate-800" />
-              <div className="w-[10px] h-[10px] rounded-sm bg-emerald-200 dark:bg-emerald-900" />
-              <div className="w-[10px] h-[10px] rounded-sm bg-emerald-300 dark:bg-emerald-700" />
+              <div className="w-[10px] h-[10px] rounded-sm bg-emerald-300 dark:bg-emerald-800" />
               <div className="w-[10px] h-[10px] rounded-sm bg-emerald-400 dark:bg-emerald-600" />
               <div className="w-[10px] h-[10px] rounded-sm bg-emerald-500 dark:bg-emerald-500" />
             </div>

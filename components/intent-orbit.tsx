@@ -3,7 +3,6 @@
 import { motion } from 'framer-motion';
 import { Target, Clock, CheckCircle2, ArrowUpRight, TrendingUp } from 'lucide-react';
 import { useLanguage } from './language-provider';
-import { getIntents } from '@/lib/unified-data';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
@@ -28,9 +27,18 @@ export function IntentOrbit({ compact = false }: IntentOrbitProps) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const data = getIntents();
-    setIntents(data);
-    setLoading(false);
+    // 使用 API 获取数据，而不是直接导入（避免 fs 模块问题）
+    fetch('/api/unified-data')
+      .then(res => res.json())
+      .then(data => {
+        setIntents(data.intents || []);
+        setLoading(false);
+      })
+      .catch(() => {
+        // 如果 API 失败，使用空数组
+        setIntents([]);
+        setLoading(false);
+      });
   }, []);
 
   const totalProgress = intents.length > 0 
