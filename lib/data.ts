@@ -1,4 +1,254 @@
+// Auto-generated from ai-memory-system
+// Synced at: 2026-04-07T06:30:01.847Z
 
+export const memoryNodes = [
+  {
+    "id": "l1-2026-03-05-memory-system-init",
+    "title": "2026-03-05-memory-system-init",
+    "level": "L1",
+    "content": "# 记忆系统初始化事件\n\n## 背景\n\nBruce 提出希望建立一套可迭代的 AI 记忆系统，用于提炼和记录：\n- 价值观、性格特征、心智模式\n- 思维模式、工作习惯、行为偏好\n- 决策原则、关注方向\n\n最终目标：让 AI 更好地与 Bruce 合作，甚至模拟其决策。\n\n## 讨论内容\n\n### 1. 记忆系统架构设计\n- 确认使用 **5 层记忆架构**（L0-L4）\n- 划分 **Intent（主动）** 和 **Memory（被动）** 双轨道\n- 建立 **Meta 元数据层** 记录系统迭代\n\n### 2. 各层定义与沉淀规则\n- **L0 状态层**：当前会话上下文，10轮自动摘要\n- **L1 情境层**：近期对话摘要，每周 review，30天归档\n- **L2 行为层**：重复行为模式，每月 review\n- **L3 认知层**：思维模式与决策框架，每季度 review\n- **L4 核心层**：价值观与身份，**仅人工修改**\n\n### 3. 触发机制设计\n- **定时触发**：Cron 每周/月/季度提醒\n- **条件触发**：Heartbeat 检测模式满足时",
+    "confidence": 0.8,
+    "category": "system-building",
+    "sources": [],
+    "connections": [],
+    "created": "2026-03-05",
+    "updated": "2026-03-05",
+    "reviewed": "2026-03-16",
+    "position": {
+      "x": 300,
+      "y": 0
+    }
+  },
+  {
+    "id": "l1-2026-03-06-multiagent-world-design",
+    "title": "2026-03-06-multiagent-world-design",
+    "level": "L1",
+    "content": "# 多智能体虚拟世界项目启动\n\n## 背景\n\nBruce 提出构建一个物理上可信的虚拟世界，不同用户角色通过自然语言控制硅基生命体，观察涌现行为。\n\n## 核心设计决策\n\n### 1. 世界本质定位\n- ✅ **物理模拟世界**，而非策略游戏\n- ✅ **观察涌现行为**是核心目标\n- ✅ 不沿用碳基物理规则，而是抽象出**硅基物理规则**\n\n### 2. 时间机制选择\n- **采用**：**准实时制（Discrete Event Simulation）**\n- **放弃**：纯回合制（需要冲突仲裁）\n- **放弃**：纯实时制（对服务器压力大）\n\n准实时制特性：\n- 世界以固定tick推进（如每秒100次）\n- 物理定律计算所有物体状态\n- 玩家可随时输入，在下一个tick生效\n- 碰撞自然处理，无需外部仲裁\n\n### 3. 公平性原则\n- ❌ 不使用：AP（行动点）等抽象货币\n- ❌ 不使用：LLM判断复杂度\n- ✅ 使用：**物理约束**作为唯一限制\n  - 移动距离 = 速度 × 时间\n  - 思考消耗虚拟时间（客观可计算）\n  - 所有角色共享相同的物理定律\n\n### 4. ",
+    "confidence": 0.8,
+    "category": "project-design",
+    "sources": [],
+    "connections": [],
+    "created": "2026-03-06",
+    "updated": "2026-03-06",
+    "reviewed": "2026-03-16",
+    "position": {
+      "x": 187.04694055762008,
+      "y": 234.54944474040894
+    }
+  },
+  {
+    "id": "l1-2026-03-11-file-transfer-issue",
+    "title": "2026-03-11-file-transfer-issue",
+    "level": "L1",
+    "content": "# 事件：飞书文件传输不稳定 → 已解决 ✅\n\n## 时间线\n- **11:35**：`kimi_upload_file` → **失败** (`invalid params`)\n- **11:40**：`kimi_upload_file` → 工具成功，用户**未收到**\n- **11:56**：`kimi_upload_file` → 工具成功，用户**未收到**\n- **12:02**：`message` 工具 + `filePath` → **成功送达** ✅\n\n## 解决方案\n```javascript\n// ✅ 正确方式：使用 message 工具\nmessage {\n  action: \"send\",\n  filePath: \"/path/to/file.md\",\n  filename: \"ai-daily-report-YYYY-MM-DD.md\"\n}\n\n// ❌ 避免：kimi_upload_file 工具（不稳定）\n```\n\n## 经验总结\n- `kimi_upload_file` 工具存在\"假成功\"问题（工具返回成功但实际未送达）\n- `message` 工具的 ",
+    "confidence": 0.8,
+    "category": "episodic",
+    "sources": [],
+    "connections": [],
+    "created": "2026-03-11",
+    "updated": "2026-03-11",
+    "reviewed": null,
+    "position": {
+      "x": -66.7562801868943,
+      "y": 292.4783736545471
+    }
+  },
+  {
+    "id": "l1-2026-04-02-daily-dream",
+    "title": "2026-04-02-daily-dream",
+    "level": "L1",
+    "content": "# 2026-04-02 会话回顾\n\n## 统计\n- 用户消息: 64\n- AI 回复: 285\n- 总会话数: 600\n\n## 溯源信息\n- **Memory ID**: L1-2026-04-02-001\n- **L0 来源**: 600 个会话\n- **时间范围**: 2026/4/2 09:13:23 - 2026/4/2 23:52:55\n- **消息总数**: 600\n\n## 一句话总结\n今日进行了 64 轮对话，持续约 287 分钟，主要围绕 记忆系统、AI 技术、任务管理、项目、编程、设计、自动Agent、日程、目标 展开。\n\n## 关键主题\n- 记忆系统\n- AI 技术\n- 任务管理\n- 项目\n- 编程\n- 设计\n- 自动Agent\n- 日程\n- 目标\n\n## 重要对话片段\n### 23:46:49\n**AI**: > agent-memory-os@1.0.0 dev\n> next dev --hostname 0.0.0.0 --port 3000\n\n  ▲ Next.js 14.2.0\n  - Local:        http://localhost:300",
+    "confidence": 0.8,
+    "category": "episodic",
+    "sources": [],
+    "connections": [],
+    "created": "2026-04-02",
+    "updated": "2026-04-02",
+    "reviewed": "2026-04-02",
+    "position": {
+      "x": -270.29066037072573,
+      "y": 130.16512173526746
+    }
+  },
+  {
+    "id": "l1-2026-04-03-system-evaluation",
+    "title": "2026-04-03-system-evaluation",
+    "level": "L1",
+    "content": "# Memory System 2.0 系统评估会话\n\n## 会话摘要\n\n今日进行了 Memory System 2.0 的全面系统评估与测试，验证基于真实文档的记忆流转机制。\n\n## 关键活动\n\n### 1. 系统健康检查\n- 检查了 GitHub 同步状态\n- 验证了五层记忆架构完整性\n- 确认了 Dreams 系统部署状态\n- 测试了自动同步脚本\n\n### 2. 发现的问题\n1. **L4 核心层待填充**: identity.md 需要核心价值观\n2. **L3 认知框架待完善**: 需要从 L2 提炼更多认知框架\n3. **Intent/Active 为空**: 当前活跃目标未记录\n\n### 3. 系统优势确认\n- ✅ 完整的数据流 L0→L4\n- ✅ 自动同步到 GitHub\n- ✅ Memory OS Web UI 可用\n- ✅ 定时任务正常运行\n\n## 技术细节\n\n**评估命令**: /mao 系统评估\n**评估范围**: 全部组件\n**数据来源**: 真实文档（ai-memory-system/）\n**测试模式**: 基于真实数据，非虚假生成\n\n## 后续行动\n\n执行",
+    "confidence": 0.8,
+    "category": "system-evaluation",
+    "sources": [],
+    "connections": [],
+    "created": "2026-04-03",
+    "updated": "2026-04-03",
+    "reviewed": null,
+    "position": {
+      "x": -270.29066037072573,
+      "y": -130.1651217352674
+    }
+  },
+  {
+    "id": "l1-2026-04-05-mao-implementation",
+    "title": "2026-04-05-mao-implementation",
+    "level": "L1",
+    "content": "# 2026-04-05: /mao 命令实现修复\n\n## 事件概述\n\n成功修复 `/mao` 多代理协调命令的实现，从\"设计愿景\"转为\"实际可执行方案\"。\n\n## 问题诊断\n\n**原始问题**: `/mao` 命令被描述为\"立即返回、后台执行、心跳监控\"，但实际是伪命令，执行时卡死/无响应。\n\n**根本原因**: \n1. SKILL.md 只有设计描述，无实际实现\n2. 主代理未识别 `/mao` 前缀\n3. 无 Manager 启动逻辑\n4. 无心跳消息发送机制\n\n## 修复过程\n\n### 1. 更新 AGENTS.md\n- 添加 `/mao` 命令识别规则\n- 定义主代理执行流程\n- 指定 Manager 启动参数\n\n### 2. 重写 SKILL.md\n- 删除\"伪命令\"描述\n- 添加实际可执行的实现细节\n- 包含完整的代码示例\n- 定义消息格式和心跳协议\n\n### 3. 创建 Manager 模板\n- `templates/manager-prompt.md`\n- 包含 Manager 完整职责说明\n- 定义 Worker 提示词模板\n- 指定状态持久化格式\n\n### 4. ",
+    "confidence": 0.8,
+    "category": "episodic",
+    "sources": [],
+    "connections": [],
+    "created": "2026-04-05",
+    "updated": "2026-04-05",
+    "reviewed": null,
+    "position": {
+      "x": -66.75628018689437,
+      "y": -292.4783736545471
+    }
+  },
+  {
+    "id": "l1-2026-04-06-daily-dream",
+    "title": "2026-04-06-daily-dream",
+    "level": "L1",
+    "content": "# 2026-04-06 会话回顾\n\n## 统计\n- 用户消息: 4\n- AI 回复: 20\n- 总会话数: 39\n\n## 溯源信息\n- **Memory ID**: L1-2026-04-06-001\n- **L0 来源**: 39 个会话\n- **时间范围**: 2026/4/6 09:00:00 - 2026/4/6 23:01:43\n- **消息总数**: 39\n\n## 一句话总结\n今日进行了 4 轮对话，持续约 782 分钟，主要围绕 记忆系统、AI 技术、任务管理、编程、日程、目标 展开。\n\n## 关键主题\n- 记忆系统\n- AI 技术\n- 任务管理\n- 编程\n- 日程\n- 目标\n\n## 重要对话片段\n### 09:00:14\n**AI**: ---\nlevel: L2\ncategory: work-habit\ncreated: 2026-03-05\nupdated: 2026-03-08\nsource: 对话观察（记忆系统初始化 + 多智能体项目设计）\nconfidence: high\nreviewed: 2026-03-08\nnext-review: 2026-04-0",
+    "confidence": 0.8,
+    "category": "episodic",
+    "sources": [],
+    "connections": [],
+    "created": "2026-04-06",
+    "updated": "2026-04-06",
+    "reviewed": "2026-04-06",
+    "position": {
+      "x": 187.04694055762002,
+      "y": -234.54944474040897
+    }
+  },
+  {
+    "id": "l2-daily-report-workflow",
+    "title": "daily-report-workflow",
+    "level": "L2",
+    "content": "# 日报生成流程（Daily Report Workflow）\n\n从实际操作中总结的有效流程。\n\n---\n\n## 标准流程\n\n### Step 1: 数据源覆盖检查\n\n**搜索执行清单**：\n- [ ] 中文AI媒体：`机器之心 量子位 自动驾驶 AI 最新`\n- [ ] 中文汽车媒体：`高工智能汽车 盖世汽车 智驾 端到端`\n- [ ] 英文科技媒体：`autonomous driving AI agent latest news`\n- [ ] 英文汽车媒体：`Tesla FSD Waymo robotaxi news`\n\n**工具**：\n- Tavily Search: `node skills/tavily-search/scripts/search.mjs`\n\n### Step 2: 内容整理\n\n**分类整理**：\n1. 🔴 核心层：自动驾驶+企业AI（直接影响工作）\n2. 🟡 近层：AI核心+行业前沿（技术趋势）\n3. 🟢 外延层：上下游拓展（间接相关）\n4. ⚪ 支撑层：政策+投研（背景参考）\n\n### Step 3: 分析与建议\n\n**必须包含**：\n- 对你当前工",
+    "confidence": 0.8,
+    "category": "procedural",
+    "sources": [],
+    "connections": [],
+    "created": "2026-03-11",
+    "updated": "2026-03-11",
+    "reviewed": null,
+    "position": {
+      "x": 200,
+      "y": 0
+    }
+  },
+  {
+    "id": "l2-systematic-thinking",
+    "title": "systematic-thinking",
+    "level": "L2",
+    "content": "# 系统化思维偏好\n\n在多个设计和决策场景中表现出对清晰层级结构、模块化设计和明确边界的偏好。\n\n---\n\n## 模式定义\n\n### 核心特征\n- **层级化思考**: 倾向于从整体架构到具体实现的自顶向下思考\n- **模块化设计**: 重视组件的独立性、可复用性和可替换性\n- **边界意识**: 强调接口、职责和边界的清晰划分\n- **结构化表达**: 喜欢使用图表、列表和层级结构来组织和呈现信息\n\n### 触发场景\n- 系统架构设计\n- API/接口设计\n- 数据模型设计\n- 工具/脚本配置\n- 流程规范制定\n\n### 典型表现\n1. 设计时先定义整体架构，再细化各层\n2. 要求每个模块有明确的输入/输出边界\n3. 配置文件要求清晰的目录结构和命名规范\n4. 文档编写时使用层级标题和结构化列表\n\n---\n\n## 观察记录\n\n### 实例汇总 (4次观察)\n\n| 序号 | 日期 | 来源 | 场景 | 具体表现 | 置信度 |\n|-----|------|------|------|---------|--------|\n| 1 | 2026-03-05 | [memory-syst",
+    "confidence": 0.8,
+    "category": "thinking-style",
+    "sources": [],
+    "connections": [],
+    "created": "2026-03-11",
+    "updated": "2026-04-02",
+    "reviewed": null,
+    "position": {
+      "x": 1.2246467991473532e-14,
+      "y": 200
+    }
+  },
+  {
+    "id": "l2-tool-usage-patterns",
+    "title": "tool-usage-patterns",
+    "level": "L2",
+    "content": "# 工具使用模式（Tool Usage Patterns）\n\n从实际使用中观察到的有效行为模式。\n\n---\n\n## 搜索工具选择流程\n\n### 场景：需要搜索信息时\n\n#### 标准流程\n1. **读取偏好**\n   - 检查 `Intent/preferences/tools.md`\n   - 确认默认搜索工具配置\n\n2. **选择工具**\n   - ✅ 使用 Tavily: `skills/tavily-search/scripts/search.mjs`\n   - ❌ 不使用 `web_search` (Brave)\n\n3. **执行搜索**\n   ```bash\n   export TAVILY_API_KEY=<from Intent/preferences>\n   node skills/tavily-search/scripts/search.mjs \"query\" --topic news -n 10\n   ```\n\n#### 常见参数\n| 参数 | 用途 |\n|------|------|\n| `--topic news` | 搜索新闻 |\n| `--days 1` ",
+    "confidence": 0.8,
+    "category": "procedural",
+    "sources": [],
+    "connections": [],
+    "created": "2026-03-11",
+    "updated": "2026-03-11",
+    "reviewed": null,
+    "position": {
+      "x": -200,
+      "y": 2.4492935982947064e-14
+    }
+  },
+  {
+    "id": "l2-work-habits",
+    "title": "work-habits",
+    "level": "L2",
+    "content": "# 工作习惯（Work Habits）\n\n## 已确认的行为模式\n\n### 1. 系统化思维 ⭐\n**定义**：追求清晰的层级结构、规则定义和系统边界\n\n**表现形式**：\n- 设计系统时要求完整的架构层级（如 5 层记忆架构）\n- 为每层明确定义：内容类型、沉淀条件、review 频率\n- 强调边界清晰（如 L4 只能人工修改）\n\n**典型场景**：\n- 记忆系统设计：逐层确认 L0-L4 的定义和流转规则\n- 多智能体项目：要求先定义硅基物理规则的整体框架\n\n**协作提示**：\n- 提供方案时先给整体架构，再进细节\n- 使用分层、结构化的信息组织方式\n- 明确标注边界和约束条件\n\n---\n\n### 2. 先底层后上层 ⭐\n**定义**：坚持先解决基础/哲学问题，再进入具体实现\n\n**表现形式**：\n- 拒绝过早确定业务逻辑，要求先搞定底层机制\n- 在工程讨论中暂停，质疑基础假设的合理性\n- 追求概念完整性，厌恶快速进入细节\n\n**典型场景**：\n- 多智能体项目：多次拒绝过早确定游戏机制，坚持先讨论时间机制、物理规则\n- 记忆系统：先确认整体架构和各层定义，再讨论具体文件格式\n\n*",
+    "confidence": 0.8,
+    "category": "work-habit",
+    "sources": [],
+    "connections": [],
+    "created": "2026-03-05",
+    "updated": "2026-03-08",
+    "reviewed": "2026-03-08",
+    "position": {
+      "x": -3.6739403974420595e-14,
+      "y": -200
+    }
+  },
+  {
+    "id": "l3-architecture-first-philosophy",
+    "title": "architecture-first-philosophy",
+    "level": "L3",
+    "content": "# 架构优先的设计哲学\n\n在解决问题时，倾向于首先建立清晰的概念框架和结构体系，将具体实现置于系统架构的理解之后。\n\n---\n\n## 框架定义\n\n### 核心命题\n\"好的设计始于清晰的架构，实现只是架构的自然延伸。\"\n\n### 底层假设\n1. 系统的长期可维护性取决于架构的清晰度\n2. 前期架构投入能够减少后期的重构成本\n3. 结构化的思考能够降低认知复杂度\n4. 明确的边界是协作效率的基础\n\n### 适用范围\n- 软件系统设计\n- 工具链和流程设计\n- 复杂问题的分析和拆解\n- 知识管理和信息组织\n\n---\n\n## 构成要素\n\n### 关键概念\n- **架构视图**: 从宏观层面理解系统的组成部分和交互关系\n- **分层抽象**: 将复杂系统分解为层次化的抽象层\n- **接口契约**: 组件间通过明确的接口进行交互\n- **一致性原则**: 在结构和命名上保持统一规范\n\n### 原则/规则\n- **先结构后细节**: 在深入具体实现前，先建立整体结构\n  - 优先级: P0\n  - 适用条件: 任何需要长期维护的系统\n- **边界先于实现**: 明确模块边界后再填充实现\n  - 优先",
+    "confidence": 0.8,
+    "category": "thinking-pattern",
+    "sources": [],
+    "connections": [],
+    "created": "2026-04-02",
+    "updated": "2026-04-02",
+    "reviewed": "2026-04-02",
+    "position": {
+      "x": 120,
+      "y": 0
+    }
+  },
+  {
+    "id": "l3-thinking-patterns",
+    "title": "thinking-patterns",
+    "level": "L3",
+    "content": "# 思维模式（Thinking Patterns）\n\n## 系统性思考\n\n*待从对话中观察沉淀...*\n\n## 分析框架\n\n*待从对话中观察沉淀...*\n\n## 心智模型\n\n*待从对话中观察沉淀...*\n\n## 知识结构\n\n*待从对话中观察沉淀...*\n\n---\n\n*上次季度 review：2026-03-05 | 下次 review：2026-06-05*",
+    "confidence": 0.8,
+    "category": "thinking-pattern",
+    "sources": [],
+    "connections": [],
+    "created": "2026-03-05",
+    "updated": "2026-03-05",
+    "reviewed": "2026-03-05",
+    "position": {
+      "x": -120,
+      "y": 1.469576158976824e-14
+    }
+  },
+  {
+    "id": "l4-identity",
+    "title": "identity",
+    "level": "L4",
+    "content": "# 核心身份（Core Identity）\n\n**重要：本层只能由 Bruce 人工修改，AI 不能自动更新。**\n\n## 核心价值观\n\n待 Bruce 填充...\n\n## 人生信念\n\n待 Bruce 填充...\n\n## 性格特征\n\n待 Bruce 填充...\n\n## 决策原则\n\n待 Bruce 填充...\n\n## 修改历史\n\n| 日期 | 修改内容 | 原因 |\n|------|---------|------|\n| 2026-03-05 | 初始化 | 建立记忆系统 |\n\n---\n\n*本层作为其他所有层级的\"校准锚点\"，所有向上沉淀的内容需与此保持一致。*",
+    "confidence": 0.8,
+    "category": "core-identity",
+    "sources": [],
+    "connections": [],
+    "created": "2026-03-05",
+    "updated": "2026-03-05",
+    "reviewed": "2026-03-05",
+    "position": {
+      "x": 60,
+      "y": 0
+    }
+  }
+];
+
+export const systemStatus = {
+  activeTasks: 0,
+  memoryNodes: 14,
+  activeIntents: 0,
+  lastSync: "2026-04-07T06:30:01.848Z",
+  systemLoad: 0
+};
 
 // 添加 intentNodes 导出以修复构建错误
 export const intentNodes = [
