@@ -236,20 +236,67 @@ export function getWeeklyReviews(): WeeklyReview[] {
       const content = readFileSync(join(reviewsDir, file), 'utf-8');
       const { data, body } = parseFrontmatter(content);
       
-      // 提取周数
-      const weekMatch = file.match(/W(\d+)/) || body.match(/W(\d+)/);
-      const week = weekMatch ? `W${weekMatch[1]}` : data.week || 'W00';
+      // 提取周数 - 优先从文件名提取，然后是 frontmatter，最后是内容
+      const weekMatch = file.match(/W(\d+)/i) || body.match(/W(\d+)/i);
+      const weekNum = weekMatch ? weekMatch[1] : null;
+      const week = data.week || (weekNum ? `W${weekNum}` : file.replace('.md', ''));
       
-      // 提取行动项
-      const actionMatches = body.match(/- \[.\] (.+)/g) || [];
-      const actions = actionMatches.map(a => a.replace(/- \[[ x]\] /, ''));
+      // 提取日期 - 优先从 frontmatter，然后是文件名
+      const dateMatch = file.match(/(\d{4}-\d{2}-\d{2})/);
+      const date = data.date || (dateMatch ? dateMatch[1] : '2026-01-01');
+      
+      // 提取 L1 计数 - 从各种可能的字段名
+      const l1Count = parseInt(data.l1_count) || 
+                      parseInt(data.l1Count) || 
+                      parseInt(data.l1) || 
+                      parseInt(data['新增记忆']) || 
+                      extractL1CountFromBody(body) || 
+                      0;
+      
+      // 提取 L2 候选数
+      const l2Candidates = parseInt(data.l2_candidates) || 
+                           parseInt(data.l2Candidates) || 
+                           parseInt(data['L2 候选数']) ||
+                           extractL2CountFromBody(body) || 
+                           0;
+      
+      // 提取行动项 - 检查 todo/checkbox 格式
+      const actions: string[] = [];
+      
+      // 匹配 Markdown checkbox 格式: - [ ] 或 - [x]
+      const checkboxMatches = body.match(/- \[[ x]\] (.+)/g) || [];
+      checkboxMatches.forEach(match => {
+        const action = match.replace(/- \[[ x]\] /, '').trim();
+        if (action && !action.startsWith('-')) {
+          actions.push(action);
+        }
+      });
+      
+      // 如果没有 checkbox，尝试匹配 "行动项" 或 "Action" 段落下的列表
+      if (actions.length === 0) {
+        const actionSection = body.match(/(?:##?\s*(?:行动项|行动清单|Actions|Action Items)[\s\S]*?)(?=\n##|\n*$)/i);
+        if (actionSection) {
+          const listMatches = actionSection[0].match(/- (.+)/g) || [];
+          listMatches.forEach(match => {
+            const action = match.replace(/^- /, '').trim();
+            if (action) actions.push(action);
+          });
+        }
+      }
+      
+      // 提取总结/概览 - 用于摘要
+      let summary = '';
+      const summaryMatch = body.match(/(?:##?\s*(?:本周概况|摘要|Summary)[\s\S]*?)(?=\n##|\n*$)/i);
+      if (summaryMatch) {
+        summary = summaryMatch[0].replace(/##?\s*(?:本周概况|摘要|Summary)\s*/, '').trim();
+      }
       
       reviews.push({
         id: file.replace('.md', ''),
         week,
-        date: data.date || file.match(/(\d{4}-\d{2}-\d{2})/)?.[1] || '2026-01-01',
-        l1Count: parseInt(data.l1_count) || 0,
-        l2Candidates: parseInt(data.l2_candidates) || 0,
+        date,
+        l1Count,
+        l2Candidates,
         actions,
         content: body
       });
@@ -259,6 +306,22 @@ export function getWeeklyReviews(): WeeklyReview[] {
   });
   
   return reviews;
+}
+
+// 辅助函数：从正文中提取 L1 计数
+function extractL1CountFromBody(body: string): number {
+  // 匹配 "L1 文件总数: X" 或 "L1 记忆: X" 等格式
+  const match = body.match(/L1.*?[:：]\s*(\d+)/i) || 
+                body.match(/新增记忆.*?[:：]\s*(\d+)/i) ||
+                body.match(/(\d+)\s*个?\s*L1/i);
+  return match ? parseInt(match[1]) : 0;
+}
+
+// 辅助函数：从正文中提取 L2 计数
+function extractL2CountFromBody(body: string): number {
+  const match = body.match(/L2.*?候选.*?[:：]\s*(\d+)/i) || 
+                body.match(/L2.*?[:：]\s*(\d+)/i);
+  return match ? parseInt(match[1]) : 0;
 }
 
 // ============ System Status ============

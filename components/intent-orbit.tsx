@@ -2,56 +2,66 @@
 
 import { motion } from 'framer-motion';
 import { Target, Clock, CheckCircle2, ArrowUpRight, TrendingUp } from 'lucide-react';
+import { useLanguage } from './language-provider';
+import { getIntents } from '@/lib/unified-data';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 interface IntentOrbitProps {
   compact?: boolean;
 }
 
-export function IntentOrbit({ compact = false }: IntentOrbitProps) {
-  const intents = [
-    { 
-      id: 1, 
-      title: 'Complete VLM project documentation', 
-      progress: 0.75, 
-      deadline: '2026-04-15', 
-      priority: 'high',
-      shortTerm: 3,
-      midTerm: 3,
-      longTerm: 2
-    },
-    { 
-      id: 2, 
-      title: 'Build personal AI assistant infrastructure', 
-      progress: 0.60, 
-      deadline: '2026-08-31', 
-      priority: 'high',
-      shortTerm: 2,
-      midTerm: 4,
-      longTerm: 5
-    },
-    { 
-      id: 3, 
-      title: 'Streamline data pipeline automation', 
-      progress: 0.55, 
-      deadline: '2026-06-30', 
-      priority: 'medium',
-      shortTerm: 1,
-      midTerm: 3,
-      longTerm: 2
-    },
-    { 
-      id: 4, 
-      title: 'Complete MoE architecture deep-dive', 
-      progress: 0.30, 
-      deadline: '2026-07-15', 
-      priority: 'medium',
-      shortTerm: 0,
-      midTerm: 2,
-      longTerm: 3
-    },
-  ];
+interface Intent {
+  id: string;
+  title: string;
+  timeframe: string;
+  progress: number;
+  deadline: string | null;
+  priority: string;
+  content: string;
+}
 
-  const totalProgress = intents.reduce((sum, i) => sum + i.progress, 0) / intents.length;
+export function IntentOrbit({ compact = false }: IntentOrbitProps) {
+  const { t } = useLanguage();
+  const router = useRouter();
+  const [intents, setIntents] = useState<Intent[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const data = getIntents();
+    setIntents(data);
+    setLoading(false);
+  }, []);
+
+  const totalProgress = intents.length > 0 
+    ? intents.reduce((sum, i) => sum + i.progress, 0) / intents.length 
+    : 0;
+
+  const handleIntentClick = () => {
+    router.push('/intent');
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-32">
+        <div className="text-sm text-gray-500">{t('common.loading')}</div>
+      </div>
+    );
+  }
+
+  if (intents.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center h-32 space-y-2">
+        <div className="text-sm text-gray-500">{t('intent.noIntents')}</div>
+        <button 
+          onClick={handleIntentClick}
+          className="text-xs text-blue-500 hover:underline"
+        >
+          {t('intent.goToManage')}
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-3">
@@ -62,6 +72,7 @@ export function IntentOrbit({ compact = false }: IntentOrbitProps) {
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: index * 0.1 }}
           whileHover={{ scale: 1.02, x: 4 }}
+          onClick={handleIntentClick}
           className="bg-gradient-to-r from-slate-50 to-white dark:from-slate-700/50 dark:to-slate-800/50 rounded-xl p-4 border border-slate-100 dark:border-slate-600/50 shadow-sm hover:shadow-md transition-all cursor-pointer group"
         >
           <div className="flex items-start justify-between mb-3">
@@ -82,16 +93,18 @@ export function IntentOrbit({ compact = false }: IntentOrbitProps) {
               
               {/* 时间线展示 */}
               <div className="flex items-center gap-4 text-xs text-gray-500">
-                <span className="flex items-center gap-1.5 bg-gray-100 dark:bg-slate-700 px-2 py-1 rounded-full">
-                  <Clock className="w-3 h-3" />
-                  {intent.deadline}
-                </span>
+                {intent.deadline && (
+                  <span className="flex items-center gap-1.5 bg-gray-100 dark:bg-slate-700 px-2 py-1 rounded-full">
+                    <Clock className="w-3 h-3" />
+                    {intent.deadline}
+                  </span>
+                )}
                 <span className={`px-2 py-1 rounded-full font-medium ${
                   intent.priority === 'high' 
                     ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' 
                     : 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'
                 }`}>
-                  {intent.priority}
+                  {t(`intent.priority.${intent.priority}`) || intent.priority}
                 </span>
               </div>
             </div>
@@ -151,9 +164,21 @@ export function IntentOrbit({ compact = false }: IntentOrbitProps) {
 
           {/* 时间分布标签 */}
           <div className="flex gap-2">
-            <TimeTag count={intent.shortTerm} label="Short-term" color="green" />
-            <TimeTag count={intent.midTerm} label="Mid-term" color="blue" />
-            <TimeTag count={intent.longTerm} label="Long-term" color="rose" />
+            <TimeTag 
+              count={intent.timeframe === 'short-term' ? 1 : 0} 
+              label={t('intent.timeframe.short')} 
+              color="green" 
+            />
+            <TimeTag 
+              count={intent.timeframe === 'mid-term' ? 1 : 0} 
+              label={t('intent.timeframe.mid')} 
+              color="blue" 
+            />
+            <TimeTag 
+              count={intent.timeframe === 'long-term' ? 1 : 0} 
+              label={t('intent.timeframe.long')} 
+              color="rose" 
+            />
           </div>
         </motion.div>
       ))}
@@ -171,8 +196,8 @@ export function IntentOrbit({ compact = false }: IntentOrbitProps) {
               <TrendingUp className="w-5 h-5 text-blue-500" />
             </div>
             <div>
-              <p className="text-sm font-medium">总体进度</p>
-              <p className="text-xs text-gray-500">{intents.length} 个活跃目标</p>
+              <p className="text-sm font-medium">{t('intent.totalProgress')}</p>
+              <p className="text-xs text-gray-500">{intents.length} {t('intent.activeGoals')}</p>
             </div>
           </div>
           <div className="text-right">
@@ -181,7 +206,7 @@ export function IntentOrbit({ compact = false }: IntentOrbitProps) {
             </div>
             <div className="flex items-center gap-1 text-xs text-green-600">
               <CheckCircle2 className="w-3 h-3" />
-              按计划进行
+              {t('intent.onTrack')}
             </div>
           </div>
         </div>
@@ -207,6 +232,8 @@ function TimeTag({ count, label, color }: { count: number; label: string; color:
     blue: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 border-blue-200',
     rose: 'bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400 border-rose-200'
   };
+
+  if (count === 0) return null;
 
   return (
     <div className={`flex items-center gap-1 px-2 py-1 rounded-lg text-xs border ${colorClasses[color]}`}>
