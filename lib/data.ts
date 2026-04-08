@@ -1,5 +1,5 @@
 // Auto-generated from ai-memory-system
-// Synced at: 2026-04-08T03:30:01.637Z
+// Synced at: 2026-04-08T15:30:01.319Z
 
 export const memoryNodes = [
   {
@@ -32,8 +32,8 @@ export const memoryNodes = [
     "updated": "2026-03-06",
     "reviewed": "2026-03-16",
     "position": {
-      "x": 212.13203435596427,
-      "y": 212.13203435596424
+      "x": 229.8133329356934,
+      "y": 192.83628290596178
     }
   },
   {
@@ -49,8 +49,8 @@ export const memoryNodes = [
     "updated": "2026-03-11",
     "reviewed": null,
     "position": {
-      "x": 1.8369701987210297e-14,
-      "y": 300
+      "x": 52.094453300079124,
+      "y": 295.4423259036624
     }
   },
   {
@@ -66,8 +66,8 @@ export const memoryNodes = [
     "updated": "2026-04-02",
     "reviewed": "2026-04-02",
     "position": {
-      "x": -212.13203435596424,
-      "y": 212.13203435596427
+      "x": -149.99999999999994,
+      "y": 259.8076211353316
     }
   },
   {
@@ -83,8 +83,8 @@ export const memoryNodes = [
     "updated": "2026-04-03",
     "reviewed": null,
     "position": {
-      "x": -300,
-      "y": 3.6739403974420595e-14
+      "x": -281.9077862357725,
+      "y": 102.60604299770067
     }
   },
   {
@@ -100,8 +100,8 @@ export const memoryNodes = [
     "updated": "2026-04-05",
     "reviewed": null,
     "position": {
-      "x": -212.1320343559643,
-      "y": -212.13203435596424
+      "x": -281.9077862357725,
+      "y": -102.6060429977006
     }
   },
   {
@@ -117,8 +117,8 @@ export const memoryNodes = [
     "updated": "2026-04-06",
     "reviewed": "2026-04-06",
     "position": {
-      "x": -5.510910596163089e-14,
-      "y": -300
+      "x": -150.00000000000014,
+      "y": -259.80762113533154
     }
   },
   {
@@ -134,8 +134,25 @@ export const memoryNodes = [
     "updated": "2026-04-07",
     "reviewed": "2026-04-07",
     "position": {
-      "x": 212.1320343559642,
-      "y": -212.1320343559643
+      "x": 52.09445330007899,
+      "y": -295.44232590366244
+    }
+  },
+  {
+    "id": "l1-2026-04-08-daily-dream",
+    "title": "2026-04-08-daily-dream",
+    "level": "L1",
+    "content": "# 2026-04-08 会话回顾\n\n## 统计\n- 用户消息: 11\n- AI 回复: 36\n- 总会话数: 70\n\n## 溯源信息\n- **Memory ID**: L1-2026-04-08-001\n- **L0 来源**: 70 个会话\n- **时间范围**: 2026/4/8 09:58:08 - 2026/4/8 23:00:00\n- **消息总数**: 70\n\n## 一句话总结\n今日进行了 11 轮对话，持续约 6 分钟，主要围绕 记忆系统、AI 技术、任务管理、编程、日程 展开。\n\n## 关键主题\n- 记忆系统\n- AI 技术\n- 任务管理\n- 编程\n- 日程\n\n## 重要对话片段\n### 10:00:35\n**用户**: [cron:3de69837-118a-4719-a6f4-c6c3842fd873 AI前沿追踪日报-飞书文档] 执行 AI 日报任务（飞书文档版）：\\n1. cd /home/bruce/.openclaw/workspace/skills/ai-news-digest-pro && export TAVILY_API_KEY=tvly-dev-",
+    "confidence": 0.8,
+    "category": "episodic",
+    "sources": [],
+    "connections": [],
+    "created": "2026-04-08",
+    "updated": "2026-04-08",
+    "reviewed": "2026-04-08",
+    "position": {
+      "x": 229.81333293569332,
+      "y": -192.83628290596187
     }
   },
   {
@@ -261,8 +278,8 @@ export const memoryNodes = [
 
 export const systemStatus = {
   activeTasks: 0,
-  memoryNodes: 15,
+  memoryNodes: 16,
   activeIntents: 0,
-  lastSync: "2026-04-08T03:30:01.637Z",
+  lastSync: "2026-04-08T15:30:01.319Z",
   systemLoad: 0
 };
