@@ -68,7 +68,7 @@ export interface MemoryNode {
   connections: string[];
   created: string;
   updated: string;
-  reviewed: string;
+  reviewed?: string | null;
   position: {
     x: number;
     y: number;

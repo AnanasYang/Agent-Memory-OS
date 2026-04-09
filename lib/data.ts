@@ -1,7 +1,9 @@
 // Auto-generated from ai-memory-system
-// Synced at: 2026-04-08T15:30:01.319Z
+// Synced at: 2026-04-09T01:30:01.997Z
 
-export const memoryNodes = [
+import { MemoryNode, IntentNode } from './types';
+
+export const memoryNodes: MemoryNode[] = [
   {
     "id": "l1-2026-03-05-memory-system-init",
     "title": "2026-03-05-memory-system-init",
@@ -276,10 +278,12 @@ export const memoryNodes = [
   }
 ];
 
+export const intentNodes: IntentNode[] = [];
+
 export const systemStatus = {
   activeTasks: 0,
   memoryNodes: 16,
   activeIntents: 0,
-  lastSync: "2026-04-08T15:30:01.319Z",
+  lastSync: "2026-04-09T01:30:01.997Z",
   systemLoad: 0
 };
