@@ -25,13 +25,32 @@ interface L0Memory {
 
 const L0_DIR = '/home/bruce/.openclaw/workspace/ai-memory-system/Memory/L0-state';
 
-// 从 L0-state 目录读取今日数据
+// 从 L0-state 目录读取今日数据（支持历史回退）
 function readL0FromFile(): L0Message[] {
   const today = new Date().toISOString().split('T')[0];
-  const l0File = join(L0_DIR, `daily-${today}.jsonl`);
+  let l0File = join(L0_DIR, `daily-${today}.jsonl`);
+  let usedFallback = false;
+  
+  // 如果今日文件不存在，回退到最新文件
+  if (!existsSync(l0File)) {
+    try {
+      const files = readdirSync(L0_DIR)
+        .filter(f => f.match(/daily-\d{4}-\d{2}-\d{2}\.jsonl$/))
+        .sort()
+        .reverse();
+      
+      if (files.length > 0) {
+        l0File = join(L0_DIR, files[0]);
+        usedFallback = true;
+        console.log(`[L0] 今日数据缺失(${today})，回退到 ${files[0]}`);
+      }
+    } catch (e) {
+      console.error('[L0] 读取目录失败:', e);
+    }
+  }
   
   if (!existsSync(l0File)) {
-    console.log('L0 file not found:', l0File);
+    console.log('[L0] 未找到任何 L0 数据文件');
     return [];
   }
   
@@ -51,9 +70,10 @@ function readL0FromFile(): L0Message[] {
       }
     }
     
+    console.log(`[L0] 从 ${usedFallback ? '历史文件' : '今日文件'}读取了 ${messages.length} 条消息`);
     return messages;
   } catch (error) {
-    console.error('Failed to read L0 file:', error);
+    console.error('[L0] 读取文件失败:', error);
     return [];
   }
 }

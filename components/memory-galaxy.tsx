@@ -63,11 +63,15 @@ export function MemoryGalaxy({ compact = false }: MemoryGalaxyProps) {
         
         const data = await response.json();
         
-        if (data.nodes && Array.isArray(data.nodes)) {
+        // 支持多种 API 返回格式
+        if (data.memories && Array.isArray(data.memories)) {
+          setNodes(data.memories);
+        } else if (data.nodes && Array.isArray(data.nodes)) {
           setNodes(data.nodes);
         } else if (Array.isArray(data)) {
           setNodes(data);
         } else {
+          console.warn('[MemoryGalaxy] 未识别的数据格式:', data);
           setNodes([]);
         }
       } catch (err) {
