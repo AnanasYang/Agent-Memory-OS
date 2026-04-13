@@ -1,5 +1,5 @@
 // Auto-generated from ai-memory-system
-// Synced at: 2026-04-13T03:30:01.216Z
+// Synced at: 2026-04-13T15:30:01.602Z
 
 export const memoryNodes = [
   {
@@ -108,7 +108,7 @@ export const memoryNodes = [
     "id": "l1-2026-04-13-daily-dream",
     "title": "2026-04-13-daily-dream",
     "level": "L1",
-    "content": "# 2026-04-13 会话回顾\n\n## 统计\n- 用户消息: 5\n- AI 回复: 18\n- 总会话数: 50\n\n## 溯源信息\n- **Memory ID**: L1-2026-04-13-001\n- **L0 来源**: 50 个会话\n- **时间范围**: 2026/4/13 09:42:51 - 2026/4/13 09:47:47\n- **消息总数**: 50\n\n## 一句话总结\n今日进行了 5 轮对话，持续约 -1 分钟，主要围绕 记忆系统、AI 技术、任务管理、编程、设计、日程、目标 展开。\n\n## 关键主题\n- 记忆系统\n- AI 技术\n- 任务管理\n- 编程\n- 设计\n- 日程\n- 目标\n\n## 重要对话片段\n### 09:47:47\n**AI**: total 88\ndrwxrwxr-x  3 bruce bruce  4096  4月  3 14:46 .\ndrwxrwxr-x 10 bruce bruce  4096  4月  5 23:30 ..\n-rwxrwxr-x  1 bruce bruce   941  4月  3 12:18 auto-sync.",
+    "content": "# 2026-04-13 会话回顾\n\n## 统计\n- 用户消息: 26\n- AI 回复: 113\n- 总会话数: 250\n\n## 溯源信息\n- **Memory ID**: L1-2026-04-13-001\n- **L0 来源**: 250 个会话\n- **时间范围**: 2026/4/13 09:42:51 - 2026/4/13 23:00:00\n- **消息总数**: 250\n\n## 一句话总结\n今日进行了 26 轮对话，持续约 793 分钟，主要围绕 记忆系统、AI 技术、任务管理、编程、设计、日程、目标 展开。\n\n## 关键主题\n- 记忆系统\n- AI 技术\n- 任务管理\n- 编程\n- 设计\n- 日程\n- 目标\n\n## 重要对话片段\n### 16:57:04\n**用户**: Read HEARTBEAT.md if it exists (workspace context). Follow it strictly. Do not infer or repeat old tasks from prior chats. If nothing needs attention, r",
     "confidence": 0.8,
     "category": "episodic",
     "sources": [],
@@ -297,6 +297,6 @@ export const systemStatus = {
   activeTasks: 0,
   memoryNodes: 17,
   activeIntents: 0,
-  lastSync: "2026-04-13T03:30:01.216Z",
+  lastSync: "2026-04-13T15:30:01.602Z",
   systemLoad: 0
 };
