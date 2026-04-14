@@ -1,5 +1,5 @@
 // Auto-generated from ai-memory-system
-// Synced at: 2026-04-14T03:30:01.377Z
+// Synced at: 2026-04-14T15:30:01.159Z
 
 export const memoryNodes = [
   {
@@ -32,8 +32,8 @@ export const memoryNodes = [
     "updated": "2026-04-03",
     "reviewed": null,
     "position": {
-      "x": 242.70509831248424,
-      "y": 176.33557568774194
+      "x": 252.37605984935436,
+      "y": 162.19224523667927
     }
   },
   {
@@ -49,8 +49,8 @@ export const memoryNodes = [
     "updated": "2026-04-05",
     "reviewed": null,
     "position": {
-      "x": 92.70509831248424,
-      "y": 285.31695488854604
+      "x": 124.62450390056593,
+      "y": 272.8895986063555
     }
   },
   {
@@ -66,8 +66,8 @@ export const memoryNodes = [
     "updated": "2026-04-06",
     "reviewed": "2026-04-06",
     "position": {
-      "x": -92.7050983124842,
-      "y": 285.3169548885461
+      "x": -42.6944514819855,
+      "y": 296.94643256427986
     }
   },
   {
@@ -83,8 +83,8 @@ export const memoryNodes = [
     "updated": "2026-04-07",
     "reviewed": "2026-04-07",
     "position": {
-      "x": -242.7050983124842,
-      "y": 176.33557568774197
+      "x": -196.4582201835855,
+      "y": 226.72487230627752
     }
   },
   {
@@ -100,8 +100,8 @@ export const memoryNodes = [
     "updated": "2026-04-08",
     "reviewed": "2026-04-08",
     "position": {
-      "x": -300,
-      "y": 3.6739403974420595e-14
+      "x": -287.8478920843492,
+      "y": 84.5197670524289
     }
   },
   {
@@ -117,8 +117,25 @@ export const memoryNodes = [
     "updated": "2026-04-13",
     "reviewed": "2026-04-13",
     "position": {
-      "x": -242.70509831248424,
-      "y": -176.3355756877419
+      "x": -287.84789208434927,
+      "y": -84.51976705242882
+    }
+  },
+  {
+    "id": "l1-2026-04-14-daily-dream",
+    "title": "2026-04-14-daily-dream",
+    "level": "L1",
+    "content": "# 2026-04-14 会话回顾\n\n## 统计\n- 用户消息: 13\n- AI 回复: 63\n- 总会话数: 126\n\n## 溯源信息\n- **Memory ID**: L1-2026-04-14-001\n- **L0 来源**: 126 个会话\n- **时间范围**: 2026/4/14 10:00:01 - 2026/4/14 23:00:10\n- **消息总数**: 126\n\n## 一句话总结\n今日进行了 13 轮对话，持续约 369 分钟，主要围绕 记忆系统、AI 技术、任务管理、项目、编程、设计、自动Agent、日程 展开。\n\n## 关键主题\n- 记忆系统\n- AI 技术\n- 任务管理\n- 项目\n- 编程\n- 设计\n- 自动Agent\n- 日程\n\n## 重要对话片段\n### 16:06:45\n**AI**: Command still running (session faint-lagoon, pid 604175). Use process (list/poll/log/write/kill/clear/remove) for follow-up.\n\n### 16:07",
+    "confidence": 0.8,
+    "category": "episodic",
+    "sources": [],
+    "connections": [],
+    "created": "2026-04-14",
+    "updated": "2026-04-14",
+    "reviewed": "2026-04-14",
+    "position": {
+      "x": -196.45822018358555,
+      "y": -226.72487230627746
     }
   },
   {
@@ -134,8 +151,8 @@ export const memoryNodes = [
     "updated": "2026-03-05",
     "reviewed": "2026-03-16",
     "position": {
-      "x": -92.70509831248427,
-      "y": -285.31695488854604
+      "x": -42.69445148198557,
+      "y": -296.9464325642798
     }
   },
   {
@@ -151,8 +168,8 @@ export const memoryNodes = [
     "updated": "2026-03-06",
     "reviewed": "2026-03-16",
     "position": {
-      "x": 92.70509831248417,
-      "y": -285.3169548885461
+      "x": 124.62450390056581,
+      "y": -272.88959860635555
     }
   },
   {
@@ -168,8 +185,8 @@ export const memoryNodes = [
     "updated": "2026-03-11",
     "reviewed": null,
     "position": {
-      "x": 242.7050983124842,
-      "y": -176.335575687742
+      "x": 252.37605984935436,
+      "y": -162.19224523667924
     }
   },
   {
@@ -295,8 +312,8 @@ export const memoryNodes = [
 
 export const systemStatus = {
   activeTasks: 0,
-  memoryNodes: 17,
+  memoryNodes: 18,
   activeIntents: 0,
-  lastSync: "2026-04-14T03:30:01.377Z",
+  lastSync: "2026-04-14T15:30:01.159Z",
   systemLoad: 0
 };
