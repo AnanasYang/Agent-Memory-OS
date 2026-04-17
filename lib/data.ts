@@ -1,5 +1,5 @@
 // Auto-generated from ai-memory-system
-// Synced at: 2026-04-17T03:30:01.514Z
+// Synced at: 2026-04-17T15:30:01.260Z
 
 export const memoryNodes = [
   {
@@ -32,8 +32,8 @@ export const memoryNodes = [
     "updated": "2026-04-03",
     "reviewed": null,
     "position": {
-      "x": 265.636807695963,
-      "y": 139.41695161313055
+      "x": 270.29066037072573,
+      "y": 130.16512173526743
     }
   },
   {
@@ -49,8 +49,8 @@ export const memoryNodes = [
     "updated": "2026-04-05",
     "reviewed": null,
     "position": {
-      "x": 170.41942401934676,
-      "y": 246.8951597680969
+      "x": 187.04694055762008,
+      "y": 234.54944474040894
     }
   },
   {
@@ -66,8 +66,8 @@ export const memoryNodes = [
     "updated": "2026-04-06",
     "reviewed": "2026-04-06",
     "position": {
-      "x": 36.16100407659697,
-      "y": 297.8126622294162
+      "x": 66.75628018689433,
+      "y": 292.4783736545471
     }
   },
   {
@@ -83,8 +83,8 @@ export const memoryNodes = [
     "updated": "2026-04-07",
     "reviewed": "2026-04-07",
     "position": {
-      "x": -106.38146611276063,
-      "y": 280.5048728056245
+      "x": -66.7562801868943,
+      "y": 292.4783736545471
     }
   },
   {
@@ -100,8 +100,8 @@ export const memoryNodes = [
     "updated": "2026-04-08",
     "reviewed": "2026-04-08",
     "position": {
-      "x": -224.55322445133027,
-      "y": 198.93679747223865
+      "x": -187.04694055762005,
+      "y": 234.54944474040897
     }
   },
   {
@@ -117,8 +117,8 @@ export const memoryNodes = [
     "updated": "2026-04-13",
     "reviewed": "2026-04-13",
     "position": {
-      "x": -291.28254522781555,
-      "y": 71.79469928626743
+      "x": -270.29066037072573,
+      "y": 130.16512173526746
     }
   },
   {
@@ -134,8 +134,8 @@ export const memoryNodes = [
     "updated": "2026-04-14",
     "reviewed": "2026-04-14",
     "position": {
-      "x": -291.28254522781566,
-      "y": -71.79469928626723
+      "x": -300,
+      "y": 3.6739403974420595e-14
     }
   },
   {
@@ -151,8 +151,8 @@ export const memoryNodes = [
     "updated": "2026-04-15",
     "reviewed": "2026-04-15",
     "position": {
-      "x": -224.55322445133038,
-      "y": -198.93679747223848
+      "x": -270.29066037072573,
+      "y": -130.1651217352674
     }
   },
   {
@@ -168,8 +168,25 @@ export const memoryNodes = [
     "updated": "2026-04-16",
     "reviewed": "2026-04-16",
     "position": {
-      "x": -106.38146611276078,
-      "y": -280.5048728056244
+      "x": -187.0469405576201,
+      "y": -234.54944474040892
+    }
+  },
+  {
+    "id": "l1-2026-04-17-daily-dream",
+    "title": "2026-04-17-daily-dream",
+    "level": "L1",
+    "content": "# 2026-04-17 会话回顾\n\n## 统计\n- 用户消息: 37\n- AI 回复: 395\n- 总会话数: 762\n\n## 溯源信息\n- **Memory ID**: L1-2026-04-17-001\n- **L0 来源**: 762 个会话\n- **时间范围**: 2026/4/17 10:00:05 - 2026/4/17 22:57:47\n- **消息总数**: 762\n\n## 一句话总结\n今日进行了 37 轮对话，持续约 56 分钟，主要围绕 记忆系统、AI 技术、任务管理、项目、编程、设计、自动Agent、日程 展开。\n\n## 关键主题\n- 记忆系统\n- AI 技术\n- 任务管理\n- 项目\n- 编程\n- 设计\n- 自动Agent\n- 日程\n\n## 重要对话片段\n### 10:23:11\n**AI**: {\n  \"status\": \"error\",\n  \"tool\": \"read\",\n  \"error\": \"ENOENT: no such file or directory, access '/home/bruce/.openclaw/extensions/feishu",
+    "confidence": 0.8,
+    "category": "episodic",
+    "sources": [],
+    "connections": [],
+    "created": "2026-04-17",
+    "updated": "2026-04-17",
+    "reviewed": "2026-04-17",
+    "position": {
+      "x": -66.75628018689437,
+      "y": -292.4783736545471
     }
   },
   {
@@ -185,8 +202,8 @@ export const memoryNodes = [
     "updated": "2026-03-05",
     "reviewed": "2026-03-16",
     "position": {
-      "x": 36.1610040765967,
-      "y": -297.8126622294162
+      "x": 66.75628018689427,
+      "y": -292.4783736545471
     }
   },
   {
@@ -202,8 +219,8 @@ export const memoryNodes = [
     "updated": "2026-03-06",
     "reviewed": "2026-03-16",
     "position": {
-      "x": 170.41942401934668,
-      "y": -246.89515976809696
+      "x": 187.04694055762002,
+      "y": -234.54944474040897
     }
   },
   {
@@ -219,8 +236,8 @@ export const memoryNodes = [
     "updated": "2026-03-11",
     "reviewed": null,
     "position": {
-      "x": 265.6368076959629,
-      "y": -139.41695161313075
+      "x": 270.29066037072573,
+      "y": -130.1651217352675
     }
   },
   {
@@ -346,8 +363,8 @@ export const memoryNodes = [
 
 export const systemStatus = {
   activeTasks: 0,
-  memoryNodes: 20,
+  memoryNodes: 21,
   activeIntents: 0,
-  lastSync: "2026-04-17T03:30:01.514Z",
+  lastSync: "2026-04-17T15:30:01.260Z",
   systemLoad: 0
 };
