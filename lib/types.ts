@@ -100,5 +100,8 @@ export interface SystemStatus {
   memoryNodes: number;
   activeIntents: number;
   lastSync: string;
+  lastGithubSync: string;
   systemLoad: number;
+  weeklyReviews: number;
+  dailyDreams: number;
 }
