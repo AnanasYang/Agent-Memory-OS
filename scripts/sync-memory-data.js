@@ -207,7 +207,7 @@ function syncAllLayers() {
   const outputPath = path.join(OUTPUT_DIR, 'memories.json');
   fs.writeFileSync(outputPath, JSON.stringify(outputData, null, 2));
   
-  // 生成数据模块
+// 生成数据模块（可选：用于静态导出）
   const dataModule = `// Auto-generated from ai-memory-system
 // Synced at: ${new Date().toISOString()}
 
@@ -222,7 +222,16 @@ export const systemStatus = {
 };
 `;
   
-  fs.writeFileSync(path.join(AGENT_MEMORY_OS, 'lib/data.ts'), dataModule);
+  // ⚠️ lib/data.ts 已废弃 - 所有组件现在使用 API 路由
+  // 如需静态数据备份，取消下面注释：
+  // fs.writeFileSync(path.join(AGENT_MEMORY_OS, 'lib/data.ts'), dataModule);
+  
+  // 如果存在旧的 lib/data.ts，删除它以避免混淆
+  const oldDataFile = path.join(AGENT_MEMORY_OS, 'lib/data.ts');
+  if (fs.existsSync(oldDataFile)) {
+    fs.unlinkSync(oldDataFile);
+    console.log('🗑️  已删除废弃的 lib/data.ts');
+  }
   
   console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
   console.log('✅ Memory Data Sync Complete!');
@@ -236,7 +245,8 @@ export const systemStatus = {
   console.log(`   Total: ${allMemories.length}`);
   console.log(`\n📁 Output files:`);
   console.log(`   - ${outputPath}`);
-  console.log(`   - ${path.join(AGENT_MEMORY_OS, 'lib/data.ts')}`);
+  // console.log(`   - ${path.join(AGENT_MEMORY_OS, 'lib/data.ts')}`);
+  console.log('   (lib/data.ts 已废弃 - 使用 API 路由)');
   console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
   
   return { stats, count: allMemories.length };
