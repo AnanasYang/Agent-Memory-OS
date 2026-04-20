@@ -17,7 +17,6 @@ import {
   ChevronRight
 } from 'lucide-react';
 import { useMemoryStore } from '@/lib/store';
-import { memoryNodes, intentNodes } from '@/lib/data';
 import { MemoryNode, IntentNode } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';

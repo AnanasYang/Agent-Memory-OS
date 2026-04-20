@@ -1,9 +1,11 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { MemoryGalaxy } from '@/components/memory-galaxy';
 import { IntentOrbit } from '@/components/intent-orbit';
 import { L0MemoryList } from '@/components/l0-memory-list';
+import { useAgentOSStore } from '@/lib/store';
 import { 
   Brain, 
   Target, 
@@ -14,22 +16,57 @@ import {
   Zap,
   Layers,
   Heart,
-  Calendar
+  Calendar,
+  RefreshCw,
+  Loader2
 } from 'lucide-react';
 import Link from 'next/link';
 
-// 模拟数据
-const memoryStats = {
-  l1Count: 5,
-  l2Count: 4,
-  l3Count: 2,
-  l4Count: 1,
-  weeklyReviews: 5
-};
-
 export default function DashboardPage() {
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 p-6">
+  const { 
+    memories, 
+    intents, 
+    l0Memories, 
+    systemStatus, 
+    isLoading, 
+    isInitialized,
+    initializeStore,
+    refreshAll
+  } = useAgentOSStore();
+  
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  // 初始化加载
+  useEffect(() => {
+    if (!isInitialized) {
+      initializeStore();
+    }
+  }, [isInitialized, initializeStore]);
+
+  // 手动刷新
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    await refreshAll();
+    setIsRefreshing(false);
+  };
+
+  // 计算统计数据
+  const l1Count = memories.filter(m => m.level === 'L1').length;
+  const l2Count = memories.filter(m => m.level === 'L2').length;
+  const l3Count = memories.filter(m => m.level === 'L3').length;
+  const l4Count = memories.filter(m => m.level === 'L4').length;
+  const weeklyReviews = systemStatus.weeklyReviews || 0;
+
+  if (isLoading && !isInitialized) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="w-8 h-8 animate-spin text-purple-500" />
+          <p className="text-gray-500">加载记忆数据中...</p>
+        </div>
+      </div>
+    );
+  }
       {/* 装饰背景 */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-20 left-10 w-72 h-72 bg-purple-200/30 dark:bg-purple-500/10 rounded-full blur-3xl" />
@@ -55,6 +92,14 @@ export default function DashboardPage() {
             </p>
           </div>
           <div className="flex items-center gap-3">
+            <button
+              onClick={handleRefresh}
+              disabled={isRefreshing}
+              className="p-2 bg-white dark:bg-slate-800 rounded-lg shadow-sm border hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors"
+              title="刷新数据"
+            >
+              <RefreshCw className={`w-5 h-5 text-gray-600 ${isRefreshing ? 'animate-spin' : ''}`} />
+            </button>
             <motion.div 
               animate={{ scale: [1, 1.05, 1] }}
               transition={{ repeat: Infinity, duration: 2 }}
@@ -76,35 +121,35 @@ export default function DashboardPage() {
           <StatCard 
             icon={<Brain className="w-4 h-4" />}
             title="L1 情境记忆" 
-            value={memoryStats.l1Count} 
+            value={l1Count} 
             subtitle="近期对话摘要" 
             gradient="from-blue-500 to-cyan-500"
           />
           <StatCard 
             icon={<Layers className="w-4 h-4" />}
             title="L2 行为模式" 
-            value={memoryStats.l2Count} 
+            value={l2Count} 
             subtitle="习惯与偏好" 
             gradient="from-amber-500 to-orange-500"
           />
           <StatCard 
             icon={<Zap className="w-4 h-4" />}
             title="L3 认知框架" 
-            value={memoryStats.l3Count} 
+            value={l3Count} 
             subtitle="思维模式" 
             gradient="from-purple-500 to-pink-500"
           />
           <StatCard 
             icon={<Heart className="w-4 h-4" />}
             title="L4 核心价值观" 
-            value={memoryStats.l4Count} 
+            value={l4Count} 
             subtitle="身份认同" 
             gradient="from-red-500 to-rose-500"
           />
           <StatCard 
             icon={<Calendar className="w-4 h-4" />}
             title="每周复盘" 
-            value={memoryStats.weeklyReviews} 
+            value={weeklyReviews} 
             subtitle="历史记录" 
             gradient="from-green-500 to-emerald-500"
           />
