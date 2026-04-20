@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { readFileSync, readdirSync, existsSync } from 'fs';
+import { readFileSync, existsSync } from 'fs';
 import { join } from 'path';
 
 interface L0Message {
@@ -23,99 +23,95 @@ interface L0Memory {
   userName: string;
 }
 
-const L0_DIR = '/home/bruce/.openclaw/workspace/ai-memory-system/Memory/L0-state';
-
-// 从 L0-state 目录读取今日数据（支持历史回退）
-function readL0FromFile(): L0Message[] {
-  const today = new Date().toISOString().split('T')[0];
-  let l0File = join(L0_DIR, `daily-${today}.jsonl`);
-  let usedFallback = false;
+// 读取预生成的静态数据（支持本地文件系统回退）
+function readL0Data(): { messages: L0Message[]; memories: L0Memory[] } {
+  const staticFile = join(process.cwd(), 'public', 'data', 'l0-memories.json');
   
-  // 如果今日文件不存在，回退到最新文件
-  if (!existsSync(l0File)) {
+  // 优先使用预生成的静态数据（Netlify 环境）
+  if (existsSync(staticFile)) {
     try {
-      const files = readdirSync(L0_DIR)
-        .filter(f => f.match(/daily-\d{4}-\d{2}-\d{2}\.jsonl$/))
-        .sort()
-        .reverse();
-      
-      if (files.length > 0) {
-        l0File = join(L0_DIR, files[0]);
-        usedFallback = true;
-        console.log(`[L0] 今日数据缺失(${today})，回退到 ${files[0]}`);
-      }
+      const data = JSON.parse(readFileSync(staticFile, 'utf-8'));
+      console.log(`[L0] 从静态文件读取: ${data.messages?.length || 0} 条消息`);
+      return {
+        messages: data.messages || data.memories || [],
+        memories: data.memories || []
+      };
     } catch (e) {
-      console.error('[L0] 读取目录失败:', e);
+      console.error('[L0] 读取静态文件失败:', e);
     }
   }
   
-  if (!existsSync(l0File)) {
-    console.log('[L0] 未找到任何 L0 数据文件');
-    return [];
-  }
+  // 本地开发环境回退：直接读取 L0-state 目录
+  const L0_DIR = '/home/bruce/.openclaw/workspace/ai-memory-system/Memory/L0-state';
+  const { readdirSync } = require('fs');
   
   try {
+    const today = new Date().toISOString().split('T')[0];
+    let l0File = join(L0_DIR, `daily-${today}.jsonl`);
+    
+    if (!existsSync(l0File)) {
+      const files = readdirSync(L0_DIR)
+        .filter((f: string) => f.match(/daily-\d{4}-\d{2}-\d{2}\.jsonl$/))
+        .sort()
+        .reverse();
+      if (files.length > 0) l0File = join(L0_DIR, files[0]);
+    }
+    
+    if (!existsSync(l0File)) return { messages: [], memories: [] };
+    
     const content = readFileSync(l0File, 'utf-8');
     const lines = content.split('\n').filter(line => line.trim());
-    
     const messages: L0Message[] = [];
+    
     for (const line of lines) {
       try {
         const msg = JSON.parse(line);
-        if (msg.ts && msg.role) {
-          messages.push(msg);
-        }
-      } catch {
-        // Skip invalid lines
-      }
+        if (msg.ts && msg.role) messages.push(msg);
+      } catch {}
     }
     
-    console.log(`[L0] 从 ${usedFallback ? '历史文件' : '今日文件'}读取了 ${messages.length} 条消息`);
-    return messages;
-  } catch (error) {
-    console.error('[L0] 读取文件失败:', error);
-    return [];
+    return { messages, memories: [] };
+  } catch (e) {
+    console.error('[L0] 本地回退读取失败:', e);
+    return { messages: [], memories: [] };
   }
-}
-
-// 按会话分组消息
-function groupBySession(messages: L0Message[]): Map<string, L0Message[]> {
-  const groups = new Map<string, L0Message[]>();
-  
-  for (const msg of messages) {
-    const sessionId = msg.sessionId || 'unknown';
-    if (!groups.has(sessionId)) {
-      groups.set(sessionId, []);
-    }
-    groups.get(sessionId)!.push(msg);
-  }
-  
-  return groups;
 }
 
 export async function GET(request: Request) {
   try {
-    // 从 L0-state 文件读取
-    const messages = readL0FromFile();
+    const { messages, memories: staticMemories } = readL0Data();
+    
+    if (staticMemories.length > 0) {
+      return NextResponse.json({
+        memories: staticMemories,
+        messages,
+        count: staticMemories.length,
+        updatedAt: Date.now()
+      });
+    }
     
     if (messages.length === 0) {
       return NextResponse.json({
         memories: [],
+        messages: [],
         count: 0,
-        message: 'No L0 data found for today',
+        message: 'No L0 data found',
         updatedAt: Date.now()
       });
     }
     
     // 按会话分组
-    const sessionGroups = groupBySession(messages);
+    const sessionGroups = new Map<string, L0Message[]>();
+    for (const msg of messages) {
+      const sessionId = msg.sessionId || 'unknown';
+      if (!sessionGroups.has(sessionId)) sessionGroups.set(sessionId, []);
+      sessionGroups.get(sessionId)!.push(msg);
+    }
     
-    // 转换为 L0 memories
     const l0Memories: L0Memory[] = Array.from(sessionGroups.entries())
       .map(([sessionId, sessionMessages]) => {
         const userMessages = sessionMessages.filter(m => m.role === 'user');
         const firstMessage = userMessages[0]?.content || '会话开始';
-        const lastMessage = sessionMessages[sessionMessages.length - 1];
         
         return {
           id: `l0-${sessionId}`,
@@ -123,11 +119,9 @@ export async function GET(request: Request) {
           title: `会话 ${sessionId.slice(0, 8)}`,
           content: firstMessage,
           sessionId,
-          timestamp: lastMessage?.ts || Date.now(),
+          timestamp: sessionMessages[sessionMessages.length - 1]?.ts || Date.now(),
           messageCount: sessionMessages.length,
-          preview: firstMessage.length > 100 
-            ? firstMessage.substring(0, 100) + '...' 
-            : firstMessage,
+          preview: firstMessage.length > 100 ? firstMessage.substring(0, 100) + '...' : firstMessage,
           channel: 'webchat',
           userName: '用户'
         };
@@ -137,6 +131,7 @@ export async function GET(request: Request) {
     
     return NextResponse.json({
       memories: l0Memories,
+      messages,
       count: l0Memories.length,
       totalMessages: messages.length,
       updatedAt: Date.now()
@@ -145,7 +140,7 @@ export async function GET(request: Request) {
   } catch (error) {
     console.error('Failed to fetch L0 memories:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch L0 data', memories: [] },
+      { error: 'Failed to fetch L0 data', memories: [], messages: [] },
       { status: 500 }
     );
   }

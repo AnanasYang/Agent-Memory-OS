@@ -1,5 +1,18 @@
 import { NextResponse } from 'next/server';
-import { getDreams, getWeeklyReviews } from '@/lib/unified-data';
+import { readFileSync, existsSync } from 'fs';
+import { join } from 'path';
+
+function readStaticData(filename: string) {
+  const staticFile = join(process.cwd(), 'public', 'data', `${filename}.json`);
+  if (existsSync(staticFile)) {
+    try {
+      return JSON.parse(readFileSync(staticFile, 'utf-8'));
+    } catch (e) {
+      console.error(`[API] 读取静态文件失败 ${filename}:`, e);
+    }
+  }
+  return null;
+}
 
 export async function GET(request: Request) {
   try {
@@ -9,10 +22,11 @@ export async function GET(request: Request) {
     const limit = parseInt(searchParams.get('limit') || '30');
     
     if (type === 'weekly') {
-      const reviews = await getWeeklyReviews();
+      const data = readStaticData('unified-data');
+      const reviews = (data?.weeklyReviews || []).slice(0, limit);
       
       if (date) {
-        const review = reviews.find(r => r.date === date || r.week === date);
+        const review = reviews.find((r: any) => r.date === date || r.week === date);
         if (!review) {
           return NextResponse.json(
             { error: 'Review not found', date },
@@ -23,17 +37,18 @@ export async function GET(request: Request) {
       }
       
       return NextResponse.json({
-        reviews: reviews.slice(0, limit),
+        reviews,
         count: reviews.length,
         lastUpdated: new Date().toISOString()
       });
     }
     
     // Daily dreams
-    const dreams = await getDreams(limit);
+    const data = readStaticData('dreams');
+    const dreams = (data?.dreams || []).slice(0, limit);
     
     if (date) {
-      const dream = dreams.find(d => d.date === date);
+      const dream = dreams.find((d: any) => d.date === date);
       if (!dream) {
         return NextResponse.json(
           { error: 'Dream not found', date },
@@ -46,7 +61,7 @@ export async function GET(request: Request) {
     return NextResponse.json({
       dreams,
       count: dreams.length,
-      lastUpdated: new Date().toISOString()
+      lastUpdated: data?.lastUpdated || new Date().toISOString()
     });
     
   } catch (error) {

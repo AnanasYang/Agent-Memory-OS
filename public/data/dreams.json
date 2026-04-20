@@ -1,0 +1,15 @@
+{
+  "dreams": [
+    {
+      "id": "dream-0",
+      "date": "test-report-2026-04-03",
+      "timestamp": 1775198818936,
+      "summary": "# Memory System 2.0 测试报告\n\n**测试时间**: 2026-04-03 12:45-12:50  \n**测试模式**: 基于真实文档  \n**执行者**: /mao\n\n---\n\n## 测试结果总览\n\n| 测试项 | 状态 | 真实数据 | 说明 |\n|--------|------|----------|------|\n| **L1 生成** | ✅ 通过 | ✅ 是 | 基于真实会话生成 |\n| **Daily Dream** | ✅ 通过 | ✅ 是 | 基于真实 L1 聚合 |\n| **GitHub 同步** | ⏳ 进行中 | ✅ 是 | 提交成功，推送中 |\n| **Memory OS UI** | ✅ 通过 | ✅ 是 | 配置完整可启动 |\n| **端到端流转** | ✅ 通过 | ✅ 是 | L0→L1→Dreams 完整 |\n\n---\n\n## 详细测试记录\n\n### 1. L1 生成测试 ✅\n\n**输入**: 真实会话（系统评估）  \n**输出**: `Memory/L1-episodic/2026-04-03-system-evaluation",
+      "sessionCount": 0,
+      "l1Count": 0,
+      "status": "success"
+    }
+  ],
+  "count": 1,
+  "lastUpdated": "2026-04-20T08:15:06.632Z"
+}
