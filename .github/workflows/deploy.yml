@@ -36,7 +36,7 @@ jobs:
       - name: Build static site
         run: npx next build
         env:
-          NEXT_PUBLIC_BASE_PATH: '/Agent-Memory-OS'
+          NEXT_PUBLIC_BASE_PATH: '/Mem-Canvas'
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
