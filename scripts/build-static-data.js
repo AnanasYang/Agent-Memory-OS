@@ -78,25 +78,43 @@ function readL0Data() {
 }
 
 function readDreams() {
-  const dreamsDir = join(AI_MEMORY_BASE, 'Meta', 'reviews');
-  if (!existsSync(dreamsDir)) return [];
+  // 优先从 weekly reviews 读取（真实的 dream 回顾数据）
+  const weeklyDir = join(AI_MEMORY_BASE, 'Meta', 'reviews', 'weekly');
+  const reviewsDir = join(AI_MEMORY_BASE, 'Meta', 'reviews');
+  let files = [];
   
-  const files = readdirSync(dreamsDir)
-    .filter(f => f.endsWith('.md'))
-    .sort()
-    .reverse()
+  // 先尝试 weekly 子目录
+  if (existsSync(weeklyDir)) {
+    files = readdirSync(weeklyDir)
+      .filter(f => f.endsWith('.md'))
+      .map(f => ({ name: f, dir: weeklyDir }));
+  }
+  
+  // 再尝试 reviews 根目录（兼容旧数据）
+  if (existsSync(reviewsDir)) {
+    const rootFiles = readdirSync(reviewsDir)
+      .filter(f => f.endsWith('.md'))
+      .map(f => ({ name: f, dir: reviewsDir }));
+    files = files.concat(rootFiles);
+  }
+  
+  // 去重并按时间排序（最新的在前）
+  const seen = new Set();
+  files = files
+    .filter(f => { const dup = seen.has(f.name); seen.add(f.name); return !dup; })
+    .sort((a, b) => b.name.localeCompare(a.name))
     .slice(0, 30);
   
-  return files.map((filename, index) => {
-    const filepath = join(dreamsDir, filename);
+  return files.map((file, index) => {
+    const filepath = join(file.dir, file.name);
     const content = readFileSync(filepath, 'utf-8');
     const stats = statSync(filepath);
     
     return {
       id: `dream-${index}`,
-      date: filename.replace('.md', ''),
+      date: file.name.replace('.md', '').replace('-weekly-review', ''),
       timestamp: stats.mtime.getTime(),
-      summary: content.slice(0, 500),
+      summary: content.slice(0, 800),
       sessionCount: 0,
       l1Count: 0,
       status: 'success'
@@ -105,27 +123,45 @@ function readDreams() {
 }
 
 function readIntents() {
-  const intentDir = join(AI_MEMORY_BASE, 'Intent', 'goals');
-  if (!existsSync(intentDir)) return [];
+  const goalsDir = join(AI_MEMORY_BASE, 'Intent', 'goals');
+  if (!existsSync(goalsDir)) return [];
   
-  const files = readdirSync(intentDir).filter(f => f.endsWith('.md'));
-  return files.map((filename, index) => {
-    const filepath = join(intentDir, filename);
-    const content = readFileSync(filepath, 'utf-8');
-    const stats = statSync(filepath);
+  const intents = [];
+  const types = ['short-term', 'mid-term', 'long-term'];
+  
+  types.forEach(type => {
+    const typeDir = join(goalsDir, type);
+    if (!existsSync(typeDir)) return;
     
-    return {
-      id: `intent-${index}`,
-      type: 'short-term',
-      title: filename.replace('.md', ''),
-      description: content.slice(0, 300),
-      progress: 0,
-      dependencies: [],
-      created: stats.birthtime.toISOString(),
-      deadline: undefined,
-      priority: 'medium'
-    };
+    const files = readdirSync(typeDir).filter(f => f.endsWith('.md'));
+    files.forEach((filename, index) => {
+      const filepath = join(typeDir, filename);
+      const content = readFileSync(filepath, 'utf-8');
+      const stats = statSync(filepath);
+      
+      // 尝试从 frontmatter 提取进度
+      const progressMatch = content.match(/progress:\s*(\d+)/);
+      const progress = progressMatch ? parseInt(progressMatch[1]) : 0;
+      
+      // 尝试提取优先级
+      const priorityMatch = content.match(/priority:\s*(high|medium|low)/);
+      const priority = priorityMatch ? priorityMatch[1] : 'medium';
+      
+      intents.push({
+        id: `intent-${type}-${index}`,
+        type: type,
+        title: filename.replace('.md', ''),
+        description: content.replace(/^---[\s\S]*?---/, '').slice(0, 300).trim(),
+        progress: progress,
+        dependencies: [],
+        created: stats.birthtime.toISOString(),
+        deadline: undefined,
+        priority: priority
+      });
+    });
   });
+  
+  return intents;
 }
 
 function getSystemStatus() {
