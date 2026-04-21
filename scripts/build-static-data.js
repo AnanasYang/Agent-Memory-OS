@@ -1,8 +1,18 @@
 const { readFileSync, readdirSync, existsSync, statSync, writeFileSync, mkdirSync } = require('fs');
 const { join, dirname } = require('path');
 
-// 基础路径配置
-const AI_MEMORY_BASE = '/home/bruce/.openclaw/workspace/ai-memory-system';
+// 基础路径配置：Netlify 构建时从 /tmp 读取 clone 的数据，本地开发时读取本地路径
+const AI_MEMORY_BASE = process.env.NETLIFY
+  ? '/tmp/ai-memory-system'
+  : '/home/bruce/.openclaw/workspace/ai-memory-system';
+
+console.log(`📂 Memory data source: ${AI_MEMORY_BASE}`);
+if (!existsSync(AI_MEMORY_BASE)) {
+  console.error(`❌ Memory data directory not found: ${AI_MEMORY_BASE}`);
+  console.error('   For Netlify builds, ensure build-netlify.sh clones the repo first.');
+  console.error('   For local builds, ensure ai-memory-system repo exists at the local path.');
+  process.exit(1);
+}
 const PUBLIC_DATA_DIR = join(__dirname, '../public/data');
 
 // 确保目录存在

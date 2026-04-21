@@ -41,3 +41,7 @@ next-env.d.ts
 
 # Local Netlify folder
 .netlify
+
+# 允许 public/data/ 提交到 Git（Netlify 构建需要）
+# 注意：这些数据文件是构建产物，但 Netlify 构建时如果没有 clone 成功会回退到这些
+# public/data/
