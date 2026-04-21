@@ -35,7 +35,7 @@ function readMemoryDir(level) {
     return {
       id: `${level.toLowerCase()}-${filename.replace('.md', '')}`,
       title: filename.replace('.md', ''),
-      level: level.replace('L', 'L'),
+      level: level.split('-')[0], // 'L1-episodic' → 'L1'
       content: content.slice(0, 5000), // 限制大小
       category: 'general',
       confidence: 0.85,
