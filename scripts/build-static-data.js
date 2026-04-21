@@ -55,26 +55,44 @@ function readL0Data() {
   const files = readdirSync(l0Dir)
     .filter(f => f.endsWith('.jsonl'))
     .sort()
-    .slice(-3); // 只取最近 3 天
+    .slice(-3);
   
   const messages = [];
+  const sessions = new Map(); // 按 session 分组
+  
   files.forEach(file => {
     const filepath = join(l0Dir, file);
     const lines = readFileSync(filepath, 'utf-8').trim().split('\n').filter(Boolean);
-    lines.slice(-20).forEach((line, idx) => { // 每条文件只取最近 20 条
+    const fileDate = file.replace('.jsonl', '');
+    
+    lines.forEach((line, idx) => {
       try {
         const msg = JSON.parse(line);
         messages.push({
-          id: `${file.replace('.jsonl', '')}-${idx}`,
+          id: `${fileDate}-${idx}`,
           role: msg.role === 'user' ? 'user' : 'assistant',
           content: msg.content?.slice(0, 200) || '',
           timestamp: msg.ts ? new Date(msg.ts).toISOString() : new Date().toISOString()
         });
       } catch (e) {}
     });
+    
+    // 构建 L0Session 格式（按文件/日期分组）
+    sessions.set(fileDate, {
+      id: `l0-${fileDate}`,
+      type: 'L0',
+      title: `Session ${fileDate}`,
+      content: `L0 state capture for ${fileDate}`,
+      sessionId: fileDate,
+      timestamp: new Date(fileDate).getTime() || Date.now(),
+      messageCount: lines.length,
+      preview: lines.slice(-1)[0] ? JSON.parse(lines.slice(-1)[0]).content?.slice(0, 100) : '',
+      channel: 'main',
+      userName: 'Bruce'
+    });
   });
   
-  return messages;
+  return { messages, sessions: Array.from(sessions.values()) };
 }
 
 function readDreams() {
@@ -110,6 +128,20 @@ function readDreams() {
     const content = readFileSync(filepath, 'utf-8');
     const stats = statSync(filepath);
     
+    // 从内容中提取 L2 候选数（frontmatter 中的 l2-candidates）
+    const l2Match = content.match(/l2-candidates:\s*(\d+)/);
+    const l2Candidates = l2Match ? parseInt(l2Match[1]) : 0;
+    
+    // 从内容中提取行动项（- [ ] 格式的待办）
+    const actions = [];
+    const actionMatches = content.matchAll(/- \[([ x])\]\s*(.+)/g);
+    for (const match of actionMatches) {
+      actions.push({
+        text: match[2].trim(),
+        completed: match[1] === 'x'
+      });
+    }
+    
     return {
       id: `dream-${index}`,
       date: file.name.replace('.md', '').replace('-weekly-review', ''),
@@ -117,6 +149,8 @@ function readDreams() {
       summary: content.slice(0, 800),
       sessionCount: 0,
       l1Count: 0,
+      l2Candidates: l2Candidates,
+      actions: actions,
       status: 'success'
     };
   });
@@ -150,9 +184,10 @@ function readIntents() {
       intents.push({
         id: `intent-${type}-${index}`,
         type: type,
+        timeframe: type, // 兼容 intent-orbit.tsx 的 timeframe 字段
         title: filename.replace('.md', ''),
         description: content.replace(/^---[\s\S]*?---/, '').slice(0, 300).trim(),
-        progress: progress,
+        progress: progress / 100, // 存储为 0-1 小数，适配前端
         dependencies: [],
         created: stats.birthtime.toISOString(),
         deadline: undefined,
@@ -245,11 +280,11 @@ writeFileSync(
 console.log(`✅ unified-data.json (${memoryNodes.length} memories, ${dreams.length} dreams)`);
 
 // 2. 生成 l0-memories.json
-const l0Messages = readL0Data();
+const l0Result = readL0Data();
 const l0Data = {
-  messages: l0Messages,
-  memories: l0Messages, // 兼容两种格式
-  count: l0Messages.length,
+  messages: l0Result.messages,
+  memories: l0Result.sessions, // L0Session 格式，兼容 l0/page.tsx
+  count: l0Result.messages.length,
   lastUpdated: new Date().toISOString()
 };
 
@@ -257,7 +292,7 @@ writeFileSync(
   join(PUBLIC_DATA_DIR, 'l0-memories.json'),
   JSON.stringify(l0Data, null, 2)
 );
-console.log(`✅ l0-memories.json (${l0Messages.length} messages)`);
+console.log(`✅ l0-memories.json (${l0Result.messages.length} messages, ${l0Result.sessions.length} sessions)`);
 
 // 3. 生成 dreams.json
 const dreamsData = {

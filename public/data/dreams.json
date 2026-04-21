@@ -7,6 +7,8 @@
       "summary": "# Memory System 2.0 测试报告\n\n**测试时间**: 2026-04-03 12:45-12:50  \n**测试模式**: 基于真实文档  \n**执行者**: /mao\n\n---\n\n## 测试结果总览\n\n| 测试项 | 状态 | 真实数据 | 说明 |\n|--------|------|----------|------|\n| **L1 生成** | ✅ 通过 | ✅ 是 | 基于真实会话生成 |\n| **Daily Dream** | ✅ 通过 | ✅ 是 | 基于真实 L1 聚合 |\n| **GitHub 同步** | ⏳ 进行中 | ✅ 是 | 提交成功，推送中 |\n| **Memory OS UI** | ✅ 通过 | ✅ 是 | 配置完整可启动 |\n| **端到端流转** | ✅ 通过 | ✅ 是 | L0→L1→Dreams 完整 |\n\n---\n\n## 详细测试记录\n\n### 1. L1 生成测试 ✅\n\n**输入**: 真实会话（系统评估）  \n**输出**: `Memory/L1-episodic/2026-04-03-system-evaluation.md`\n\n**验证内容**:\n- ✅ YAML Frontmatter 格式正确\n- ✅ level: L1 标记正确\n- ✅ source: 对话观察\n- ✅ 内容基于真实会话\n\n### 2. Daily Dream 测试 ✅\n\n**输入**: 真实 L1 文件（4个历史 + 1个新增）  \n**输出**: `Meta/dreams/daily/2026-04-03.md`\n\n**验证内容**:\n- ✅ 聚合今日所有 L1\n- ✅ 生成叙事性摘要\n- ✅ 提取关键洞察\n- ✅ 标记 L2 候选\n\n### 3. GitHub 同步测试 ⏳\n\n**操作**:\n```bash\ngit add -",
       "sessionCount": 0,
       "l1Count": 0,
+      "l2Candidates": 0,
+      "actions": [],
       "status": "success"
     },
     {
@@ -16,6 +18,29 @@
       "summary": "---\nlevel: Meta\ncategory: weekly-review\nweek: 2026-W13\ndate: 2026-03-30\nreviewer: 小爪\n---\n\n# L1 每周 Review 报告 - 2026-W13\n\n## 📊 本周概况\n\n**Review 周期**: 2026-03-23 至 2026-03-30\n**L1 文件总数**: 3 个\n**本周新增**: 0 个\n\n---\n\n## 📁 L1 情境层内容盘点\n\n### 现有 L1 文件\n\n| 文件名 | 创建日期 | 距今天数 | 归档状态 |\n|--------|----------|----------|----------|\n| 2026-03-05-memory-system-init.md | 2026-03-05 | 25 天 | ✅ 保留 |\n| 2026-03-06-multiagent-world-design.md | 2026-03-06 | 24 天 | ✅ 保留 |\n| 2026-03-11-file-transfer-issue.md | 2026-03-11 | 19 天 | ✅ 保留 |\n\n---\n\n## 🗃️ 归档检查\n\n**规则**: L1 文件超过 30 天自动归档到 `archive/L1/YYYY-MM/`\n\n**结果**: 本周无需归档\n- 最旧的 L1 文件（2026-03-05）距今 25 天，距离归档还有 5 天\n- 预计下周（4月2日后）开始归档\n\n---\n\n## 🔄 L2 行为模式状态\n\n### 已确认的模式（来自之前 Review）\n\n| 模式名称 | 确认日期 | 来源 |\n|----------|----------|------|\n| 系统化思维 | 2026-03-08 | L1-episodic 提取 |\n| 先底层后",
       "sessionCount": 0,
       "l1Count": 0,
+      "l2Candidates": 0,
+      "actions": [
+        {
+          "text": "检查 L1-episodic 内容",
+          "completed": true
+        },
+        {
+          "text": "生成本周 Review 摘要",
+          "completed": true
+        },
+        {
+          "text": "评估 L2 沉淀候选",
+          "completed": true
+        },
+        {
+          "text": "检查归档任务",
+          "completed": true
+        },
+        {
+          "text": "**下周待办**: 归档 2026-03-05 和 2026-03-06 的 L1 文件",
+          "completed": false
+        }
+      ],
       "status": "success"
     },
     {
@@ -25,6 +50,17 @@
       "summary": "---\nreview_type: weekly\ncycle: 2026-W12\nreview_date: 2026-03-23\nmemory_level: L1\ntotal_events: 3\n---\n\n# L1 每周回顾摘要 (2026-03-17 ~ 2026-03-23)\n\n## 本周事件统计\n\n| 日期 | 事件 | 类型 | 状态 |\n|------|------|------|------|\n| 03-05 | AI Memory System 初始化 | 系统构建 | ✅ 已完成 |\n| 03-06 | 多智能体虚拟世界项目启动 | 项目设计 | 🔄 进行中 |\n| 03-11 | 飞书文件传输问题解决 | 技术问题 | ✅ 已解决 |\n\n## 核心主题\n\n### 1. 记忆系统架构落地\n- 完整建立了 5 层记忆架构（L0-L4）\n- 设计了 Intent 主动轨道 + Memory 被动沉淀双轨制\n- 配置了 4 个 Cron 定时任务实现自动化 review\n- **关键决策**：L4 核心层仅人工修改，AI 不得自动更新\n\n### 2. 多智能体世界设计哲学\n- **底层优先**：先讨论物理规则、时间机制，再进入实现细节\n- **物理主义**：坚持用物理约束（速度、距离、时间）而非抽象规则\n- **哲学反思**：深入探讨自由意志、涌现性、观察者效应等问题\n- **技术选择**：采用准实时制（DES）而非回合制或纯实时制\n\n### 3. 工具使用模式优化\n- 发现 `kimi_upload_file` 存在假成功问题\n- 确立 `message` + `filePath` 为文件传输标准方式\n- 更新 workflow 文档避免重复踩坑\n\n## 确认的 L2 行为模式（已满足 3+ 次观察）\n\n| 模式 | 置信度 | 来源 | 说明 |\n|-----",
       "sessionCount": 0,
       "l1Count": 0,
+      "l2Candidates": 0,
+      "actions": [
+        {
+          "text": "将确认的 L2 模式写入 `L2-procedural/`（需 Bruce 确认）",
+          "completed": false
+        },
+        {
+          "text": "继续跟进多智能体世界项目进展",
+          "completed": false
+        }
+      ],
       "status": "success"
     },
     {
@@ -34,6 +70,8 @@
       "summary": "---\nlevel: Meta\ncategory: weekly-review\nperiod: 2026-W11 (3/9-3/15)\nreview_date: 2026-03-16\nreviewer: 小爪\n---\n\n# L1 情境层周回顾报告\n\n## 📊 本周概况\n\n**Review 周期**: 2026年3月9日 - 3月15日（第11周）  \n**Review 日期**: 2026年3月16日  \n**L1 文件总数**: 3 个  \n**归档文件**: 0 个（无超过30天的文件）\n\n---\n\n## 📁 本周 L1 文件清单\n\n| 文件 | 日期 | 类别 | 状态 |\n|------|------|------|------|\n| memory-system-init | 03-05 | system-building | ✅ 已审阅 |\n| multiagent-world-design | 03-06 | project-design | ✅ 已审阅 |\n| file-transfer-issue | 03-11 | episodic | ✅ 已审阅，已解决 |\n\n---\n\n## 🔍 关键事件摘要\n\n### 1. AI Memory System 建立（3/5）\n- **性质**: 系统级架构设计\n- **参与者**: Bruce + 小爪\n- **成果**: 完整的5层记忆架构 + Intent轨道 + Meta元数据层\n- **关键决策**: L4核心层仅Bruce可修改，AI不得自动更新\n\n### 2. 多智能体虚拟世界项目启动（3/6）\n- **性质**: 深度架构探讨\n- **核心设计**: 准实时制物理模拟世界，硅基物理规则\n- **哲学讨论**: 自由意志vs决定论、涌现本质等\n- **MVP方向**: 鱼缸世界（大鱼vs小鱼）\n\n###",
       "sessionCount": 0,
       "l1Count": 0,
+      "l2Candidates": 0,
+      "actions": [],
       "status": "success"
     },
     {
@@ -43,6 +81,21 @@
       "summary": "---\nlevel: Meta\ncategory: weekly-review\nmemory_id: Meta-2026-04-19-001\ndate: 2026-04-19\nweek: W16\ndream-generated: true\n---\n\n# W16 周回顾 - 2026-04-19\n\n## 本周 L1 记忆统计\n- 新增记忆: 13\n- 待 Review: 13\n- L2 候选数: 98\n\n## 今日生成\n- Memory ID: L1-2026-04-19-001\n- 状态: ✅ 有数据\n\n## 行动项\n- [ ] 检查 L1 记忆，确认 L2 候选\n- [ ] 更新 L2-procedural/work-habits.md（如需要）\n- [ ] 检查是否有模式达到 3 次，可沉淀到 L2\n\n---\n\n*由 Daily Dream 自动生成*\n",
       "sessionCount": 0,
       "l1Count": 0,
+      "l2Candidates": 0,
+      "actions": [
+        {
+          "text": "检查 L1 记忆，确认 L2 候选",
+          "completed": false
+        },
+        {
+          "text": "更新 L2-procedural/work-habits.md（如需要）",
+          "completed": false
+        },
+        {
+          "text": "检查是否有模式达到 3 次，可沉淀到 L2",
+          "completed": false
+        }
+      ],
       "status": "success"
     },
     {
@@ -52,6 +105,21 @@
       "summary": "---\nlevel: Meta\ncategory: weekly-review\nmemory_id: Meta-2026-04-18-001\ndate: 2026-04-18\nweek: W16\ndream-generated: true\n---\n\n# W16 周回顾 - 2026-04-18\n\n## 本周 L1 记忆统计\n- 新增记忆: 12\n- 待 Review: 12\n- L2 候选数: 90\n\n## 今日生成\n- Memory ID: L1-2026-04-18-001\n- 状态: ✅ 有数据\n\n## 行动项\n- [ ] 检查 L1 记忆，确认 L2 候选\n- [ ] 更新 L2-procedural/work-habits.md（如需要）\n- [ ] 检查是否有模式达到 3 次，可沉淀到 L2\n\n---\n\n*由 Daily Dream 自动生成*\n",
       "sessionCount": 0,
       "l1Count": 0,
+      "l2Candidates": 0,
+      "actions": [
+        {
+          "text": "检查 L1 记忆，确认 L2 候选",
+          "completed": false
+        },
+        {
+          "text": "更新 L2-procedural/work-habits.md（如需要）",
+          "completed": false
+        },
+        {
+          "text": "检查是否有模式达到 3 次，可沉淀到 L2",
+          "completed": false
+        }
+      ],
       "status": "success"
     },
     {
@@ -61,6 +129,21 @@
       "summary": "---\nlevel: Meta\ncategory: weekly-review\nmemory_id: Meta-2026-04-17-001\ndate: 2026-04-17\nweek: W16\ndream-generated: true\n---\n\n# W16 周回顾 - 2026-04-17\n\n## 本周 L1 记忆统计\n- 新增记忆: 11\n- 待 Review: 11\n- L2 候选数: 82\n\n## 今日生成\n- Memory ID: L1-2026-04-17-001\n- 状态: ✅ 有数据\n\n## 行动项\n- [ ] 检查 L1 记忆，确认 L2 候选\n- [ ] 更新 L2-procedural/work-habits.md（如需要）\n- [ ] 检查是否有模式达到 3 次，可沉淀到 L2\n\n---\n\n*由 Daily Dream 自动生成*\n",
       "sessionCount": 0,
       "l1Count": 0,
+      "l2Candidates": 0,
+      "actions": [
+        {
+          "text": "检查 L1 记忆，确认 L2 候选",
+          "completed": false
+        },
+        {
+          "text": "更新 L2-procedural/work-habits.md（如需要）",
+          "completed": false
+        },
+        {
+          "text": "检查是否有模式达到 3 次，可沉淀到 L2",
+          "completed": false
+        }
+      ],
       "status": "success"
     },
     {
@@ -70,6 +153,21 @@
       "summary": "---\nlevel: Meta\ncategory: weekly-review\nmemory_id: Meta-2026-04-16-001\ndate: 2026-04-16\nweek: W16\ndream-generated: true\n---\n\n# W16 周回顾 - 2026-04-16\n\n## 本周 L1 记忆统计\n- 新增记忆: 10\n- 待 Review: 10\n- L2 候选数: 73\n\n## 今日生成\n- Memory ID: L1-2026-04-16-001\n- 状态: ✅ 有数据\n\n## 行动项\n- [ ] 检查 L1 记忆，确认 L2 候选\n- [ ] 更新 L2-procedural/work-habits.md（如需要）\n- [ ] 检查是否有模式达到 3 次，可沉淀到 L2\n\n---\n\n*由 Daily Dream 自动生成*\n",
       "sessionCount": 0,
       "l1Count": 0,
+      "l2Candidates": 0,
+      "actions": [
+        {
+          "text": "检查 L1 记忆，确认 L2 候选",
+          "completed": false
+        },
+        {
+          "text": "更新 L2-procedural/work-habits.md（如需要）",
+          "completed": false
+        },
+        {
+          "text": "检查是否有模式达到 3 次，可沉淀到 L2",
+          "completed": false
+        }
+      ],
       "status": "success"
     },
     {
@@ -79,6 +177,21 @@
       "summary": "---\nlevel: Meta\ncategory: weekly-review\nmemory_id: Meta-2026-04-15-001\ndate: 2026-04-15\nweek: W16\ndream-generated: true\n---\n\n# W16 周回顾 - 2026-04-15\n\n## 本周 L1 记忆统计\n- 新增记忆: 9\n- 待 Review: 9\n- L2 候选数: 64\n\n## 今日生成\n- Memory ID: L1-2026-04-15-001\n- 状态: ✅ 有数据\n\n## 行动项\n- [ ] 检查 L1 记忆，确认 L2 候选\n- [ ] 更新 L2-procedural/work-habits.md（如需要）\n- [ ] 检查是否有模式达到 3 次，可沉淀到 L2\n\n---\n\n*由 Daily Dream 自动生成*\n",
       "sessionCount": 0,
       "l1Count": 0,
+      "l2Candidates": 0,
+      "actions": [
+        {
+          "text": "检查 L1 记忆，确认 L2 候选",
+          "completed": false
+        },
+        {
+          "text": "更新 L2-procedural/work-habits.md（如需要）",
+          "completed": false
+        },
+        {
+          "text": "检查是否有模式达到 3 次，可沉淀到 L2",
+          "completed": false
+        }
+      ],
       "status": "success"
     },
     {
@@ -88,6 +201,21 @@
       "summary": "---\nlevel: Meta\ncategory: weekly-review\nmemory_id: Meta-2026-04-14-001\ndate: 2026-04-14\nweek: W16\ndream-generated: true\n---\n\n# W16 周回顾 - 2026-04-14\n\n## 本周 L1 记忆统计\n- 新增记忆: 8\n- 待 Review: 8\n- L2 候选数: 53\n\n## 今日生成\n- Memory ID: L1-2026-04-14-001\n- 状态: ✅ 有数据\n\n## 行动项\n- [ ] 检查 L1 记忆，确认 L2 候选\n- [ ] 更新 L2-procedural/work-habits.md（如需要）\n- [ ] 检查是否有模式达到 3 次，可沉淀到 L2\n\n---\n\n*由 Daily Dream 自动生成*\n",
       "sessionCount": 0,
       "l1Count": 0,
+      "l2Candidates": 0,
+      "actions": [
+        {
+          "text": "检查 L1 记忆，确认 L2 候选",
+          "completed": false
+        },
+        {
+          "text": "更新 L2-procedural/work-habits.md（如需要）",
+          "completed": false
+        },
+        {
+          "text": "检查是否有模式达到 3 次，可沉淀到 L2",
+          "completed": false
+        }
+      ],
       "status": "success"
     },
     {
@@ -97,6 +225,21 @@
       "summary": "---\nlevel: Meta\ncategory: weekly-review\nmemory_id: Meta-2026-04-13-001\ndate: 2026-04-13\nweek: W16\ndream-generated: true\n---\n\n# W16 周回顾 - 2026-04-13\n\n## 本周 L1 记忆统计\n- 新增记忆: 7\n- 待 Review: 7\n- L2 候选数: 44\n\n## 今日生成\n- Memory ID: L1-2026-04-13-001\n- 状态: ✅ 有数据\n\n## 行动项\n- [ ] 检查 L1 记忆，确认 L2 候选\n- [ ] 更新 L2-procedural/work-habits.md（如需要）\n- [ ] 检查是否有模式达到 3 次，可沉淀到 L2\n\n---\n\n*由 Daily Dream 自动生成*\n",
       "sessionCount": 0,
       "l1Count": 0,
+      "l2Candidates": 0,
+      "actions": [
+        {
+          "text": "检查 L1 记忆，确认 L2 候选",
+          "completed": false
+        },
+        {
+          "text": "更新 L2-procedural/work-habits.md（如需要）",
+          "completed": false
+        },
+        {
+          "text": "检查是否有模式达到 3 次，可沉淀到 L2",
+          "completed": false
+        }
+      ],
       "status": "success"
     },
     {
@@ -106,6 +249,25 @@
       "summary": "---\nlevel: Meta\ncategory: weekly-review\nweek: W16\ndate: 2026-04-13\nweekStart: 2026-04-11\nweekEnd: 2026-04-13\n---\n\n# W16 周回顾\n\n生成时间: 2026/4/13 10:08:01\n\n## 📊 本周统计\n\n| 指标 | 数值 |\n|------|------|\n| L1记忆数 | 1 |\n| 检测到的模式 | 0 |\n| L2候选 | 0 |\n| 累计L2候选 | 08 |\n\n## 🧬 检测到的行为模式\n\n\n\n## 🎯 L2沉淀候选 (待人工确认)\n\n*暂无候选*\n\n## 📝 行动项\n\n- [ ] Review L2候选，确认是否沉淀到L2-procedural/\n- [ ] 检查是否有模式达到3次+可升级\n- [ ] 更新 work-habits.md（如有新确认的行为）\n- [ ] 检查L3聚合条件（多个L2指向同一框架）\n\n## 🔗 相关文件\n\n- L1记忆: `Memory/L1-episodic/`\n- L2候选: `Memory/L2-procedural/candidates/2026-04-13-week-W16.json`\n- L2沉淀: `Memory/L2-procedural/`\n\n---\n\n*由 Weekly Dream 自动生成*\n*下一步: 人工Review确认后，自动/手动更新L2*\n",
       "sessionCount": 0,
       "l1Count": 0,
+      "l2Candidates": 0,
+      "actions": [
+        {
+          "text": "Review L2候选，确认是否沉淀到L2-procedural/",
+          "completed": false
+        },
+        {
+          "text": "检查是否有模式达到3次+可升级",
+          "completed": false
+        },
+        {
+          "text": "更新 work-habits.md（如有新确认的行为）",
+          "completed": false
+        },
+        {
+          "text": "检查L3聚合条件（多个L2指向同一框架）",
+          "completed": false
+        }
+      ],
       "status": "success"
     },
     {
@@ -115,6 +277,8 @@
       "summary": "---\nlevel: L1\nperiod: weekly\ncategory: episodic-review\ncreated: 2026-04-13\nupdated: 2026-04-13\nsource: L1-episodic 聚合\nconfidence: high\nreview_type: weekly\nweek_range: 2026-04-07 to 2026-04-13\n---\n\n# L1 每周回顾 - 2026年4月第2周\n\n**回顾周期**: 2026-04-07 (周一) 至 2026-04-13 (周日)  \n**生成日期**: 2026-04-13  \n**数据来源**: Daily Dream 自动生成 + 手动记录\n\n---\n\n## 📊 本周概览\n\n| 日期 | 类型 | 用户消息 | AI回复 | 总会话 | 关键主题 |\n|------|------|---------|--------|--------|---------|\n| 04-07 | Daily Dream | 20 | 152 | 330 | 记忆系统、Agent设计、任务管理、编程 |\n| 04-08 | Daily Dream | 11 | 36 | 70 | AI技术、任务管理、定时任务、日程 |\n\n**本周总对话**: 约 400 条消息  \n**主要互动时段**: 9:00 - 23:00  \n**平均每日会话**: 2-4 轮主动对话\n\n---\n\n## 🎯 核心主题分布\n\n### 高频主题（本周热点）\n\n1. **AI 技术应用** ⭐⭐⭐\n   - 出现次数: 4月7日(82次)、4月8日(7次)\n   - 典型场景: AI 日报自动生成、技术动态追踪\n   - 趋势: 持续高度关注\n\n2. **记忆系统相关** ⭐⭐⭐\n   - 出现次数: 4月7日(66次)、",
       "sessionCount": 0,
       "l1Count": 0,
+      "l2Candidates": 0,
+      "actions": [],
       "status": "success"
     },
     {
@@ -124,6 +288,21 @@
       "summary": "---\nlevel: Meta\ncategory: weekly-review\nmemory_id: Meta-2026-04-08-001\ndate: 2026-04-08\nweek: W15\ndream-generated: true\n---\n\n# W15 周回顾 - 2026-04-08\n\n## 本周 L1 记忆统计\n- 新增记忆: 9\n- 待 Review: 9\n- L2 候选数: 34\n\n## 今日生成\n- Memory ID: L1-2026-04-08-001\n- 状态: ✅ 有数据\n\n## 行动项\n- [ ] 检查 L1 记忆，确认 L2 候选\n- [ ] 更新 L2-procedural/work-habits.md（如需要）\n- [ ] 检查是否有模式达到 3 次，可沉淀到 L2\n\n---\n\n*由 Daily Dream 自动生成*\n",
       "sessionCount": 0,
       "l1Count": 0,
+      "l2Candidates": 0,
+      "actions": [
+        {
+          "text": "检查 L1 记忆，确认 L2 候选",
+          "completed": false
+        },
+        {
+          "text": "更新 L2-procedural/work-habits.md（如需要）",
+          "completed": false
+        },
+        {
+          "text": "检查是否有模式达到 3 次，可沉淀到 L2",
+          "completed": false
+        }
+      ],
       "status": "success"
     },
     {
@@ -133,6 +312,21 @@
       "summary": "---\nlevel: Meta\ncategory: weekly-review\nmemory_id: Meta-2026-04-07-001\ndate: 2026-04-07\nweek: W15\ndream-generated: true\n---\n\n# W15 周回顾 - 2026-04-07\n\n## 本周 L1 记忆统计\n- 新增记忆: 8\n- 待 Review: 8\n- L2 候选数: 27\n\n## 今日生成\n- Memory ID: L1-2026-04-07-001\n- 状态: ✅ 有数据\n\n## 行动项\n- [ ] 检查 L1 记忆，确认 L2 候选\n- [ ] 更新 L2-procedural/work-habits.md（如需要）\n- [ ] 检查是否有模式达到 3 次，可沉淀到 L2\n\n---\n\n*由 Daily Dream 自动生成*\n",
       "sessionCount": 0,
       "l1Count": 0,
+      "l2Candidates": 0,
+      "actions": [
+        {
+          "text": "检查 L1 记忆，确认 L2 候选",
+          "completed": false
+        },
+        {
+          "text": "更新 L2-procedural/work-habits.md（如需要）",
+          "completed": false
+        },
+        {
+          "text": "检查是否有模式达到 3 次，可沉淀到 L2",
+          "completed": false
+        }
+      ],
       "status": "success"
     },
     {
@@ -142,6 +336,21 @@
       "summary": "---\nlevel: Meta\ncategory: weekly-review\nmemory_id: Meta-2026-04-06-001\ndate: 2026-04-06\nweek: W15\ndream-generated: true\n---\n\n# W15 周回顾 - 2026-04-06\n\n## 本周 L1 记忆统计\n- 新增记忆: 7\n- 待 Review: 7\n- L2 候选数: 16\n\n## 今日生成\n- Memory ID: L1-2026-04-06-001\n- 状态: ✅ 有数据\n\n## 行动项\n- [ ] 检查 L1 记忆，确认 L2 候选\n- [ ] 更新 L2-procedural/work-habits.md（如需要）\n- [ ] 检查是否有模式达到 3 次，可沉淀到 L2\n\n---\n\n*由 Daily Dream 自动生成*\n",
       "sessionCount": 0,
       "l1Count": 0,
+      "l2Candidates": 0,
+      "actions": [
+        {
+          "text": "检查 L1 记忆，确认 L2 候选",
+          "completed": false
+        },
+        {
+          "text": "更新 L2-procedural/work-habits.md（如需要）",
+          "completed": false
+        },
+        {
+          "text": "检查是否有模式达到 3 次，可沉淀到 L2",
+          "completed": false
+        }
+      ],
       "status": "success"
     },
     {
@@ -151,6 +360,21 @@
       "summary": "> 📅 **Review 周期**: 2026-04-06（周一）\n> 🎯 **Review 类型**: L1 情境层 - 每周回顾\n\n---\n\n## 📊 本周 L1 状态\n\n**L1-episodic 目录**: 暂无文件\n\n**状态**: 🟡 空状态（本周尚未生成会话摘要）\n\n**说明**: \n- 本周（2026-04-05 至 2026-04-06）暂无需要沉淀到 L1 的会话内容\n- L1 文件通常在会话结束或达到 10 轮对话时自动生成\n- 建议：检查是否有未记录的会话需要补充\n\n---\n\n## 🔍 候选行为模式（L2 沉淀）\n\n**本周观察**: 暂无\n\n由于本周暂无新 L1 内容，无可识别的新行为模式。\n\n**现有 L2 行为库**: 已确认 4 个核心行为模式（见 `L2-procedural/work-habits.md`）\n- 系统化思维\n- 先底层后上层\n- 物理主义倾向\n- 哲学反思习惯\n\n---\n\n## 🗄️ 归档检查\n\n**超过 30 天的 L1 文件**: 无\n\n- 当前 L1 目录为空，无需归档\n- 下次归档检查：2026-05-06\n\n---\n\n## 📝 行动项\n\n- [ ] 检查是否有未记录的会话需要补充到 L1\n- [ ] 下次 L1 Review：2026-04-13（下周一）\n- [ ] 下次 L2 Review：2026-04-08（本周三，月度）\n\n---\n\n*Review 完成时间: 2026-04-06 09:00 CST*\n",
       "sessionCount": 0,
       "l1Count": 0,
+      "l2Candidates": 0,
+      "actions": [
+        {
+          "text": "检查是否有未记录的会话需要补充到 L1",
+          "completed": false
+        },
+        {
+          "text": "下次 L1 Review：2026-04-13（下周一）",
+          "completed": false
+        },
+        {
+          "text": "下次 L2 Review：2026-04-08（本周三，月度）",
+          "completed": false
+        }
+      ],
       "status": "success"
     },
     {
@@ -160,6 +384,21 @@
       "summary": "---\nlevel: Meta\ncategory: weekly-review\nmemory_id: Meta-2026-04-02-001\ndate: 2026-04-02\nweek: W14\ndream-generated: true\n---\n\n# W14 周回顾 - 2026-04-02\n\n## 本周 L1 记忆统计\n- 新增记忆: 4\n- 待 Review: 4\n- L2 候选数: 10\n\n## 今日生成\n- Memory ID: L1-2026-04-02-001\n- 状态: ✅ 有数据\n\n## 行动项\n- [ ] 检查 L1 记忆，确认 L2 候选\n- [ ] 更新 L2-procedural/work-habits.md（如需要）\n- [ ] 检查是否有模式达到 3 次，可沉淀到 L2\n\n---\n\n*由 Daily Dream 自动生成*\n",
       "sessionCount": 0,
       "l1Count": 0,
+      "l2Candidates": 0,
+      "actions": [
+        {
+          "text": "检查 L1 记忆，确认 L2 候选",
+          "completed": false
+        },
+        {
+          "text": "更新 L2-procedural/work-habits.md（如需要）",
+          "completed": false
+        },
+        {
+          "text": "检查是否有模式达到 3 次，可沉淀到 L2",
+          "completed": false
+        }
+      ],
       "status": "success"
     },
     {
@@ -169,9 +408,11 @@
       "summary": "---\nlevel: Meta\ncategory: review/weekly\nperiod: 2026-W10\ndate: 2026-03-09\nparticipants: 小爪 (AI)\nreviewed_items: 2\n---\n\n# L1 周回顾摘要（2026年3月第2周）\n\n## 回顾范围\n- **时间范围**: 2026-03-05 至 2026-03-09\n- **L1 文件数**: 2\n- **归档文件**: 0（无超过30天文件）\n\n---\n\n## 本周核心事件\n\n### 1. AI 记忆系统建立（2026-03-05）\n**类型**: 系统构建\n**关键决策**:\n- 采用 5 层记忆架构（L0-L4）\n- 分离 Intent（主动）与 Memory（被动）轨道\n- 建立 Meta 元数据层\n- 明确 L4 层仅人工修改的权限边界\n\n**完成成果**:\n- ✅ 完整目录结构\n- ✅ 7 个模板文件\n- ✅ 4 个 Cron 定时任务\n- ✅ AGENTS.md / HEARTBEAT.md 更新\n\n---\n\n### 2. 多智能体虚拟世界项目启动（2026-03-06）\n**类型**: 项目设计\n**核心设计决策**:\n- 物理模拟世界定位（非策略游戏）\n- 准实时制时间机制\n- 物理约束而非规则仲裁\n- 硅基物理规则体系\n\n**哲学探讨**:\n- 自由意志 vs 决定论\n- 涌现行为的本质\n- 观察者效应\n\n---\n\n## 检测到的新行为模式（L2 候选）\n\n### 已确认可沉淀至 L2 的模式：\n\n| # | 模式名称 | 观察来源 | 频次 | 置信度 |\n|---|---------|---------|------|--------|\n| 1 | **系统化思维** | 记忆系统架构设计 | 1次显式 | 高 |\n| 2 | **先底层后上层*",
       "sessionCount": 0,
       "l1Count": 0,
+      "l2Candidates": 0,
+      "actions": [],
       "status": "success"
     }
   ],
   "count": 19,
-  "lastUpdated": "2026-04-21T02:46:03.454Z"
+  "lastUpdated": "2026-04-21T03:04:25.079Z"
 }
