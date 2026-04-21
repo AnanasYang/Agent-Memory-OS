@@ -1,172 +1,123 @@
 #!/bin/bash
-# AI Memory System 同步脚本
-# 解决第6b和第7个问题：打通本地与 GitHub 的同步
+# =============================================================================
+# Agent Memory OS - 记忆数据同步脚本
+# 用途: 将 ai-memory-system 的最新记忆数据同步到 agent-memory-os
+#       并触发 Netlify 重新构建
+# =============================================================================
 
 set -e
 
-echo "🔄 AI Memory System 同步脚本"
-echo "=============================="
+# 颜色输出
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
 
-# 配置
+# 路径配置
 AI_MEMORY_DIR="/home/bruce/.openclaw/workspace/ai-memory-system"
 AGENT_OS_DIR="/home/bruce/.openclaw/workspace/agent-memory-os"
 LOG_FILE="/tmp/memory-sync.log"
 
-# 日志函数
-log() {
-    echo "$(date '+%Y-%m-%d %H:%M:%S') - $1" | tee -a "$LOG_FILE"
-}
+# 日期
+DATE=$(date '+%Y-%m-%d %H:%M:%S')
+TIMESTAMP=$(date +%Y%m%d_%H%M%S)
 
-# 1. 检查 ai-memory-system 更新
-check_updates() {
-    log "检查 ai-memory-system 更新..."
-    cd "$AI_MEMORY_DIR"
-    
-    # 获取 Git 状态
-    git fetch origin main --quiet 2>/dev/null || true
-    
-    LOCAL=$(git rev-parse HEAD 2>/dev/null || echo "none")
-    REMOTE=$(git rev-parse origin/main 2>/dev/null || echo "$LOCAL")
-    
-    if [ "$LOCAL" != "$REMOTE" ]; then
-        log "⚠️ 发现远程更新，需要拉取"
-        return 1
+echo "========================================" | tee -a "$LOG_FILE"
+echo "🔄 记忆数据同步 - $DATE" | tee -a "$LOG_FILE"
+echo "========================================" | tee -a "$LOG_FILE"
+
+# =============================================================================
+# Step 1: 同步 ai-memory-system（记忆源仓库）
+# =============================================================================
+echo ""
+echo -e "${BLUE}[Step 1/4]${NC} 同步 ai-memory-system 记忆源..." | tee -a "$LOG_FILE"
+
+cd "$AI_MEMORY_DIR"
+
+# 检查是否有未提交的更改
+if [ -n "$(git status --short)" ]; then
+    echo "  📝 检测到新记忆数据，正在提交..." | tee -a "$LOG_FILE"
+    git add -A
+    git commit -m "memory sync: $TIMESTAMP" || true
+    git push origin main
+    echo -e "  ${GREEN}✅ ai-memory-system 已推送${NC}" | tee -a "$LOG_FILE"
+else
+    echo "  ⏭️  记忆源无新数据，跳过提交" | tee -a "$LOG_FILE"
+fi
+
+# =============================================================================
+# Step 2: 生成静态数据
+# =============================================================================
+echo ""
+echo -e "${BLUE}[Step 2/4]${NC} 生成静态数据文件..." | tee -a "$LOG_FILE"
+
+cd "$AGENT_OS_DIR"
+
+# 重新生成 public/data/*.json
+node scripts/build-static-data.js 2>&1 | tee -a "$LOG_FILE"
+
+# 统计生成的数据
+MEMORY_COUNT=$(grep -o '"memoryNodes"' public/data/unified-data.json | wc -l)
+DREAM_COUNT=$(grep -o '"dreams"' public/data/dreams.json | wc -l)
+
+echo -e "  ${GREEN}✅ 静态数据生成完成${NC}" | tee -a "$LOG_FILE"
+
+# =============================================================================
+# Step 3: 同步 agent-memory-os（触发 Netlify 构建）
+# =============================================================================
+echo ""
+echo -e "${BLUE}[Step 3/4]${NC} 同步 agent-memory-os 构建仓库..." | tee -a "$LOG_FILE"
+
+cd "$AGENT_OS_DIR"
+
+if [ -n "$(git status --short public/data/)" ]; then
+    echo "  📝 静态数据有更新，正在提交..." | tee -a "$LOG_FILE"
+    git add public/data/
+    git commit -m "sync: memory data $TIMESTAMP" || true
+# 尝试推送（如果失败则提示手动推送）
+PUSH_OUTPUT=$(git push origin main 2>&1) && {
+    echo -e "  ${GREEN}✅ agent-memory-os 已推送，Netlify 将自动构建${NC}" | tee -a "$LOG_FILE"
+} || {
+    echo -e "  ${YELLOW}⚠️ 自动推送失败，请手动执行:${NC}" | tee -a "$LOG_FILE"
+    echo "     cd $AGENT_OS_DIR && git push origin main" | tee -a "$LOG_FILE"
+    echo -e "  ${YELLOW}   或检查 ~/.ssh/config 和 GitHub Token 配置${NC}" | tee -a "$LOG_FILE"
+}
+else
+    echo "  ⏭️  静态数据无变化，跳过推送" | tee -a "$LOG_FILE"
+fi
+
+# =============================================================================
+# Step 4: 验证构建（可选：本地模拟 Netlify 构建）
+# =============================================================================
+echo ""
+echo -e "${BLUE}[Step 4/4]${NC} 验证数据完整性..." | tee -a "$LOG_FILE"
+
+# 检查 JSON 数据有效性
+for file in public/data/unified-data.json public/data/memory.json public/data/dreams.json public/data/l0-memories.json; do
+    if [ -f "$file" ]; then
+        SIZE=$(stat -c%s "$file" 2>/dev/null || stat -f%z "$file" 2>/dev/null)
+        echo "  📄 $(basename $file): ${SIZE} bytes" | tee -a "$LOG_FILE"
+        
+        # 验证 JSON 格式
+        if node -e "JSON.parse(require('fs').readFileSync('$file'));" 2>/dev/null; then
+            echo -e "    ${GREEN}✓ JSON 有效${NC}" | tee -a "$LOG_FILE"
+        else
+            echo -e "    ${RED}✗ JSON 格式错误${NC}" | tee -a "$LOG_FILE"
+        fi
     else
-        log "✅ 本地已是最新"
-        return 0
+        echo -e "  ${RED}✗ $file 不存在${NC}" | tee -a "$LOG_FILE"
     fi
-}
+done
 
-# 2. 提交本地更改到 GitHub
-sync_to_github() {
-    log "同步本地更改到 GitHub..."
-    cd "$AI_MEMORY_DIR"
-    
-    # 检查是否有未提交的更改
-    if [ -n "$(git status --porcelain 2>/dev/null)" ]; then
-        git add -A
-        git commit -m "auto: daily sync $(date '+%Y-%m-%d-%H:%M')" || true
-        git push origin main || log "⚠️ GitHub 推送失败（可能是网络问题）"
-        log "✅ 本地更改已提交到 GitHub"
-    else
-        log "ℹ️ 没有需要提交的更改"
-    fi
-}
-
-# 3. 同步数据到 agent-memory-os 缓存
-sync_to_os() {
-    log "同步数据到 Agent Memory OS..."
-    
-    # 确保目录存在
-    mkdir -p "$AGENT_OS_DIR/memory/dreams/daily"
-    mkdir -p "$AGENT_OS_DIR/memory/dreams/weekly"
-    
-    # 复制 L1 记忆作为 Dreams
-    if [ -d "$AI_MEMORY_DIR/Memory/L1-episodic" ]; then
-        for file in "$AI_MEMORY_DIR"/Memory/L1-episodic/*daily*.md; do
-            if [ -f "$file" ]; then
-                basename=$(basename "$file")
-                # 转换为 JSON 格式缓存
-                date_str=$(echo "$basename" | grep -oE '[0-9]{4}-[0-9]{2}-[0-9]{2}' || date +%Y-%m-%d)
-                json_file="$AGENT_OS_DIR/memory/dreams/daily/${date_str}-dream.json"
-                
-                if [ ! -f "$json_file" ]; then
-                    cat > "$json_file" << EOF
-{
-  "id": "${date_str}-dream",
-  "date": "$date_str",
-  "timestamp": $(date -d "$date_str" +%s000 2>/dev/null || echo 0),
-  "summary": "Synced from ai-memory-system",
-  "status": "success",
-  "source": "ai-memory-system"
-}
-EOF
-                fi
-            fi
-        done
-        log "✅ Dreams 数据已同步"
-    fi
-    
-    # 生成系统状态缓存
-    status_file="$AGENT_OS_DIR/memory/system-status.json"
-    cat > "$status_file" << EOF
-{
-  "lastSync": "$(date -Iseconds)",
-  "lastGithubSync": "$(cd $AI_MEMORY_DIR && git log -1 --format=%cd --date=iso 2>/dev/null || echo 'unknown')",
-  "l1Count": $(find "$AI_MEMORY_DIR/Memory/L1-episodic" -name "*.md" 2>/dev/null | wc -l),
-  "l2Count": $(find "$AI_MEMORY_DIR/Memory/L2-procedural" -name "*.md" 2>/dev/null | wc -l),
-  "l3Count": $(find "$AI_MEMORY_DIR/Memory/L3-semantic" -name "*.md" 2>/dev/null | wc -l),
-  "l4Count": $(find "$AI_MEMORY_DIR/Memory/L4-core" -name "*.md" 2>/dev/null | wc -l),
-  "weeklyReviews": $(find "$AI_MEMORY_DIR/Meta/reviews/weekly" -name "*.md" 2>/dev/null | wc -l)
-}
-EOF
-    log "✅ 系统状态缓存已更新"
-}
-
-# 4. 生成每日 Dream（如果没有的话）
-generate_daily_dream() {
-    log "检查今日 Dream..."
-    
-    TODAY=$(date +%Y-%m-%d)
-    DREAM_FILE="$AI_MEMORY_DIR/Memory/L1-episodic/${TODAY}-daily-dream.md"
-    
-    if [ ! -f "$DREAM_FILE" ]; then
-        log "⚠️ 今日 Dream 不存在，需要生成"
-        # 这里可以调用 AI 生成 Dream 的逻辑
-        # 目前只是标记需要生成
-        echo "$TODAY" > /tmp/need-dream-generation
-    else
-        log "✅ 今日 Dream 已存在"
-    fi
-}
-
-# 5. 检查需要 Review 的记忆
-check_reviews() {
-    log "检查待 Review 的记忆..."
-    
-    cd "$AI_MEMORY_DIR"
-    
-    # 检查 L1 超过 7 天的
-    find Memory/L1-episodic -name "*.md" -mtime +7 -type f 2>/dev/null | while read file; do
-        log "📋 L1 待 Review: $file"
-    done
-    
-    # 检查 L2 超过 30 天的
-    find Memory/L2-procedural -name "*.md" -mtime +30 -type f 2>/dev/null | while read file; do
-        log "📋 L2 待 Review: $file"
-    done
-}
-
-# 主流程
-main() {
-    log "开始同步..."
-    
-    # 检查目录是否存在
-    if [ ! -d "$AI_MEMORY_DIR" ]; then
-        log "❌ 错误: ai-memory-system 目录不存在"
-        exit 1
-    fi
-    
-    if [ ! -d "$AGENT_OS_DIR" ]; then
-        log "❌ 错误: agent-memory-os 目录不存在"
-        exit 1
-    fi
-    
-    # 执行同步步骤
-    sync_to_github
-    sync_to_os
-    generate_daily_dream
-    check_reviews
-    
-    log "同步完成!"
-    echo ""
-    echo "📊 同步摘要:"
-    echo "  - GitHub 同步: 完成"
-    echo "  - Agent OS 数据更新: 完成"
-    echo "  - 系统状态缓存: 已更新"
-    echo ""
-    echo "查看详细日志: $LOG_FILE"
-}
-
-# 执行
-main "$@"
+echo ""
+echo "========================================" | tee -a "$LOG_FILE"
+echo -e "${GREEN}🎉 同步完成！${NC}" | tee -a "$LOG_FILE"
+echo "========================================" | tee -a "$LOG_FILE"
+echo ""
+echo "📋 摘要:" | tee -a "$LOG_FILE"
+echo "  • 记忆源:  $AI_MEMORY_DIR" | tee -a "$LOG_FILE"
+echo "  • 构建源:  $AGENT_OS_DIR" | tee -a "$LOG_FILE"
+echo "  • 日志:    $LOG_FILE" | tee -a "$LOG_FILE"
+echo "  • Netlify: 构建将在推送后自动触发" | tee -a "$LOG_FILE"
+echo ""
