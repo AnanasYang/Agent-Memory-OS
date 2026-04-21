@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { ParticleBackground } from '@/components/particle-bg';
 import { NavBar } from '@/components/nav-bar';
 import { getLevelColor } from '@/lib/colors';
+import { getDataPath } from '@/lib/data-loader';
 import { Radar, TrendingUp, ArrowUpCircle, Brain, Target, AlertTriangle, CheckCircle } from 'lucide-react';
 
 interface MemoryNode {
@@ -29,7 +30,7 @@ export default function PatternRadarPage() {
   const [intents, setIntents] = useState<Intent[]>([]);
 
   useEffect(() => {
-    fetch('/api/unified-data')
+    fetch(getDataPath('unified-data'))
       .then(r => r.json())
       .then(d => {
         setMemories(d.memoryNodes || []);

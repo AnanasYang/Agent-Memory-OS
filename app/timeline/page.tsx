@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { ParticleBackground } from '@/components/particle-bg';
 import { NavBar } from '@/components/nav-bar';
 import { getLevelColor } from '@/lib/colors';
+import { getDataPath } from '@/lib/data-loader';
 import { Calendar, Filter, Droplets } from 'lucide-react';
 
 interface Activity {
@@ -19,7 +20,7 @@ export default function MemoryRiverPage() {
   const [hoveredDate, setHoveredDate] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch('/api/unified-data')
+    fetch(getDataPath('unified-data'))
       .then(r => r.json())
       .then(d => setActivities(d.activities || []));
   }, []);

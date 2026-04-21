@@ -4,6 +4,7 @@ import { useEffect, useState, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ParticleBackground } from '@/components/particle-bg';
 import { NavBar } from '@/components/nav-bar';
+import { getDataPath } from '@/lib/data-loader';
 import { getLevelColor } from '@/lib/colors';
 import { X, Link2, Calendar, Sparkles } from 'lucide-react';
 
@@ -36,7 +37,7 @@ export default function MemoryConstellationPage() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    fetch('/api/memory')
+    fetch(getDataPath('memory'))
       .then(r => r.json())
       .then(d => {
         const nodes = (d.memories || []).map((m: any, i: number) => ({

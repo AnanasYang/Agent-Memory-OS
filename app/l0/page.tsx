@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { ParticleBackground } from '@/components/particle-bg';
 import { NavBar } from '@/components/nav-bar';
+import { getDataPath } from '@/lib/data-loader';
 import { Activity, MessageSquare, Clock, Zap, RefreshCw } from 'lucide-react';
 
 interface L0Message {
@@ -29,7 +30,7 @@ export default function L0StreamPage() {
 
   const fetchData = () => {
     setLoading(true);
-    fetch('/api/l0-memories')
+    fetch(getDataPath('l0-memories'))
       .then(r => r.json())
       .then(d => {
         setMessages(d.messages || []);

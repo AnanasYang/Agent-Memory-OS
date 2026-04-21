@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { NeuralCore } from '@/components/neural-core';
 import { ParticleBackground } from '@/components/particle-bg';
 import { NavBar } from '@/components/nav-bar';
+import { getDataPath } from '@/lib/data-loader';
 import { getLevelColor } from '@/lib/colors';
 import { Brain, Zap, Target, Moon, Clock, Activity } from 'lucide-react';
 import Link from 'next/link';
@@ -21,7 +22,7 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('/api/unified-data')
+    fetch(getDataPath('unified-data'))
       .then(r => r.json())
       .then(d => {
         setData(d);

@@ -4,6 +4,7 @@ import { useEffect, useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ParticleBackground } from '@/components/particle-bg';
 import { NavBar } from '@/components/nav-bar';
+import { getDataPath } from '@/lib/data-loader';
 import { getLevelColor } from '@/lib/colors';
 import { Moon, Calendar, ChevronDown, ChevronUp, Brain, MessageSquare, Target, Sparkles } from 'lucide-react';
 
@@ -25,7 +26,7 @@ export default function DreamArchivePage() {
   const [filter, setFilter] = useState<'all' | 'week' | 'month'>('all');
 
   useEffect(() => {
-    fetch('/api/dreams')
+    fetch(getDataPath('dreams'))
       .then(r => r.json())
       .then(d => setDreams(d.dreams || []));
   }, []);
