@@ -6,6 +6,7 @@ import { ParticleBackground } from '@/components/particle-bg';
 import { NavBar } from '@/components/nav-bar';
 import { getDataPath } from '@/lib/data-loader';
 import { getLevelColor } from '@/lib/colors';
+import { MarkdownRenderer } from '@/components/markdown-renderer';
 import { Moon, Calendar, ChevronDown, ChevronUp, Brain, MessageSquare, Target, Sparkles } from 'lucide-react';
 
 interface Dream {
@@ -184,9 +185,9 @@ export default function DreamArchivePage() {
                                 {dream.date}
                               </h3>
 
-                              <p className="text-xs text-slate-400 line-clamp-2">
-                                {dream.summary.substring(0, 200).replace(/#/g, '').trim()}...
-                              </p>
+                              <div className="text-xs text-slate-400 line-clamp-2">
+                                <MarkdownRenderer content={dream.summary.substring(0, 200)} />
+                              </div>
 
                               <div className="flex items-center gap-3 mt-3">
                                 <span className="flex items-center gap-1 text-[10px] text-slate-500">
@@ -224,8 +225,8 @@ export default function DreamArchivePage() {
                                 exit={{ opacity: 0, height: 0 }}
                                 className="mt-4 pt-4 border-t border-white/5 overflow-hidden"
                               >
-                                <div className="text-sm text-slate-300 whitespace-pre-wrap leading-relaxed max-h-80 overflow-y-auto pr-2">
-                                  {dream.summary}
+                                <div className="max-h-80 overflow-y-auto pr-2 custom-scrollbar">
+                                  <MarkdownRenderer content={dream.summary} />
                                 </div>
 
                                 {dream.actions.length > 0 && (

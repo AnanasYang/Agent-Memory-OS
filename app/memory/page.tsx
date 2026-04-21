@@ -6,6 +6,7 @@ import { ParticleBackground } from '@/components/particle-bg';
 import { NavBar } from '@/components/nav-bar';
 import { getDataPath } from '@/lib/data-loader';
 import { getLevelColor } from '@/lib/colors';
+import { MarkdownRenderer } from '@/components/markdown-renderer';
 import { X, Link2, Calendar, Sparkles } from 'lucide-react';
 
 interface MemoryNode {
@@ -291,9 +292,11 @@ export default function MemoryConstellationPage() {
                   </span>
                 </div>
 
-                <div className="text-sm text-slate-300 leading-relaxed whitespace-pre-wrap">
-                  {selectedNode.content?.substring(0, 800)}
-                  {selectedNode.content?.length > 800 && '...'}
+                <div className="mb-4 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+                  <MarkdownRenderer 
+                    content={selectedNode.content || ''} 
+                    maxLength={2000}
+                  />
                 </div>
 
                 {selectedNode.connections.length > 0 && (
