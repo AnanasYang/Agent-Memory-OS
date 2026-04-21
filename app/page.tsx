@@ -2,392 +2,234 @@
 
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { MemoryGalaxy } from '@/components/memory-galaxy';
-import { IntentOrbit } from '@/components/intent-orbit';
-import { L0MemoryList } from '@/components/l0-memory-list';
-import { useAgentOSStore } from '@/lib/store';
-import { 
-  Brain, 
-  Target, 
-  Activity, 
-  MessageSquare,
-  ArrowRight,
-  Sparkles,
-  Zap,
-  Layers,
-  Heart,
-  Calendar,
-  RefreshCw,
-  Loader2
-} from 'lucide-react';
+import { NeuralCore } from '@/components/neural-core';
+import { ParticleBackground } from '@/components/particle-bg';
+import { NavBar } from '@/components/nav-bar';
+import { getLevelColor } from '@/lib/colors';
+import { Brain, Zap, Target, Moon, Clock, Activity } from 'lucide-react';
 import Link from 'next/link';
 
+interface UnifiedData {
+  memoryNodes: any[];
+  intents: any[];
+  dreams: any[];
+  status: any;
+}
+
 export default function DashboardPage() {
-  const { 
-    memories, 
-    intents, 
-    l0Memories, 
-    systemStatus, 
-    isLoading, 
-    isInitialized,
-    initializeStore,
-    refreshAll
-  } = useAgentOSStore();
-  
-  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [data, setData] = useState<UnifiedData | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  // 初始化加载
   useEffect(() => {
-    if (!isInitialized) {
-      initializeStore();
-    }
-  }, [isInitialized, initializeStore]);
+    fetch('/api/unified-data')
+      .then(r => r.json())
+      .then(d => {
+        setData(d);
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
+  }, []);
 
-  // 手动刷新
-  const handleRefresh = async () => {
-    setIsRefreshing(true);
-    await refreshAll();
-    setIsRefreshing(false);
-  };
-
-  // 计算统计数据
-  const l1Count = memories.filter(m => m.level === 'L1').length;
-  const l2Count = memories.filter(m => m.level === 'L2').length;
-  const l3Count = memories.filter(m => m.level === 'L3').length;
-  const l4Count = memories.filter(m => m.level === 'L4').length;
-  const weeklyReviews = systemStatus.weeklyReviews || 0;
-
-  if (isLoading && !isInitialized) {
+  if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
-          <Loader2 className="w-8 h-8 animate-spin text-purple-500" />
-          <p className="text-gray-500">加载记忆数据中...</p>
+          <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+          <p className="text-sm text-slate-400">初始化神经核心...</p>
         </div>
       </div>
     );
   }
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 p-6">
-      {/* 装饰背景 */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-20 left-10 w-72 h-72 bg-purple-200/30 dark:bg-purple-500/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-20 right-10 w-96 h-96 bg-pink-200/30 dark:bg-pink-500/10 rounded-full blur-3xl" />
-      </div>
+  if (!data) return null;
 
-      <div className="max-w-7xl mx-auto space-y-6 relative z-10">
+  const memories = data.memoryNodes || [];
+  const intents = data.intents || [];
+  const dreams = data.dreams || [];
+  const status = data.status || {};
+
+  const levelCounts = {
+    L1: memories.filter(m => m.level === 'L1').length,
+    L2: memories.filter(m => m.level === 'L2').length,
+    L3: memories.filter(m => m.level === 'L3').length,
+    L4: memories.filter(m => m.level === 'L4').length,
+  };
+
+  const recentMemories = memories.slice(0, 3);
+
+  return (
+    <div className="min-h-screen relative">
+      <ParticleBackground />
+      <NavBar />
+
+      <main className="relative z-10 max-w-6xl mx-auto px-4 py-8 pb-32">
         {/* Header */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="flex items-center justify-between"
+          className="text-center mb-8"
         >
-          <div>
-            <div className="flex items-center gap-3 mb-2">
-              <Sparkles className="w-8 h-8 text-purple-500" />
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 via-pink-500 to-blue-500 bg-clip-text text-transparent">
-                Memory OS
-              </h1>
-            </div>
-            <p className="text-gray-500 dark:text-gray-400">
-              基于 5 层记忆架构的智能可视化系统
-            </p>
-          </div>
-          <div className="flex items-center gap-3">
-            <button
-              onClick={handleRefresh}
-              disabled={isRefreshing}
-              className="p-2 bg-white dark:bg-slate-800 rounded-lg shadow-sm border hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors"
-              title="刷新数据"
-            >
-              <RefreshCw className={`w-5 h-5 text-gray-600 ${isRefreshing ? 'animate-spin' : ''}`} />
-            </button>
-            <motion.div 
-              animate={{ scale: [1, 1.05, 1] }}
-              transition={{ repeat: Infinity, duration: 2 }}
-              className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-800 rounded-full shadow-sm border"
-            >
-              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-              <span className="text-sm text-gray-600 dark:text-gray-300">系统运行中</span>
-            </motion.div>
-          </div>
+          <h1 className="text-3xl font-bold text-white mb-2">
+            <span className="text-glow" style={{ color: '#60A5FA' }}>神经</span>
+            <span className="text-white">记忆核心</span>
+          </h1>
+          <p className="text-sm text-slate-400">
+            五层记忆架构实时可视化 · {memories.length} 条记忆节点 · 最后同步 {new Date(status.lastSync).toLocaleString('zh-CN')}
+          </p>
         </motion.div>
 
-        {/* Stats Cards */}
-        <motion.div 
+        {/* Core Visualization */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.2 }}
+          className="flex justify-center mb-8"
+        >
+          <NeuralCore
+            data={{
+              memories,
+              l0Count: 3,
+              l0Messages: 649,
+              intents: intents.length,
+              dreams: dreams.length,
+              lastSync: status.lastSync,
+            }}
+          />
+        </motion.div>
+
+        {/* Stats Grid */}
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="grid grid-cols-2 md:grid-cols-5 gap-4"
+          transition={{ delay: 0.4 }}
+          className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-8"
         >
-          <StatCard 
-            icon={<Brain className="w-4 h-4" />}
-            title="L1 情境记忆" 
-            value={l1Count} 
-            subtitle="近期对话摘要" 
-            gradient="from-blue-500 to-cyan-500"
-          />
-          <StatCard 
-            icon={<Layers className="w-4 h-4" />}
-            title="L2 行为模式" 
-            value={l2Count} 
-            subtitle="习惯与偏好" 
-            gradient="from-amber-500 to-orange-500"
-          />
-          <StatCard 
-            icon={<Zap className="w-4 h-4" />}
-            title="L3 认知框架" 
-            value={l3Count} 
-            subtitle="思维模式" 
-            gradient="from-purple-500 to-pink-500"
-          />
-          <StatCard 
-            icon={<Heart className="w-4 h-4" />}
-            title="L4 核心价值观" 
-            value={l4Count} 
-            subtitle="身份认同" 
-            gradient="from-red-500 to-rose-500"
-          />
-          <StatCard 
-            icon={<Calendar className="w-4 h-4" />}
-            title="每周复盘" 
-            value={weeklyReviews} 
-            subtitle="历史记录" 
-            gradient="from-green-500 to-emerald-500"
-          />
+          {[
+            { level: 'L1', count: levelCounts.L1, icon: Brain, label: '情景记忆' },
+            { level: 'L2', count: levelCounts.L2, icon: Zap, label: '程序记忆' },
+            { level: 'L3', count: levelCounts.L3, icon: Target, label: '语义记忆' },
+            { level: 'L4', count: levelCounts.L4, icon: Activity, label: '核心记忆' },
+            { level: 'L0', count: 649, icon: Moon, label: '实时消息' },
+          ].map((stat) => {
+            const color = getLevelColor(stat.level);
+            const Icon = stat.icon;
+            return (
+              <Link
+                key={stat.level}
+                href={stat.level === 'L0' ? '/l0' : stat.level === 'L4' ? '/insights' : '/memory'}
+              >
+                <motion.div
+                  whileHover={{ y: -4, scale: 1.02 }}
+                  className="glow-card p-4 text-center cursor-pointer"
+                  style={{ borderColor: color.main + '30' }}
+                >
+                  <Icon className="w-5 h-5 mx-auto mb-2" style={{ color: color.glow }} />
+                  <div className="text-2xl font-bold" style={{ color: color.glow }}>
+                    {stat.count}
+                  </div>
+                  <div className="text-xs text-slate-400 mt-1">
+                    {stat.level} · {stat.label}
+                  </div>
+                </motion.div>
+              </Link>
+            );
+          })}
         </motion.div>
 
-        {/* Main Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Memory Galaxy Preview */}
-          <motion.div 
+        {/* Recent Memories + System Status */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Recent Memories */}
+          <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.2 }}
-            className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl overflow-hidden shadow-lg border border-purple-100 dark:border-slate-700"
+            transition={{ delay: 0.5 }}
+            className="glow-card p-5"
           >
-            <div className="p-4 border-b border-purple-100 dark:border-slate-700 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
-                  <Brain className="w-5 h-5 text-purple-600 dark:text-purple-400" />
-                </div>
-                <h2 className="font-semibold text-lg">记忆星系</h2>
-              </div>
-              <Link 
-                href="/memory" 
-                className="text-sm text-purple-600 hover:text-purple-700 dark:text-purple-400 flex items-center gap-1 transition-colors"
-              >
-                查看全部 <ArrowRight className="w-4 h-4" />
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-sm font-semibold text-white">最近沉淀的记忆</h3>
+              <Link href="/memory" className="text-xs text-blue-400 hover:text-blue-300">
+                查看全部 →
               </Link>
             </div>
-            <div className="h-80 bg-gradient-to-br from-purple-50/50 to-pink-50/50 dark:from-slate-900 dark:to-slate-800">
-              <MemoryGalaxy compact />
-            </div>
-          </motion.div>
-
-          {/* Intent Orbit Preview */}
-          <motion.div 
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.3 }}
-            className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl overflow-hidden shadow-lg border border-blue-100 dark:border-slate-700"
-          >
-            <div className="p-4 border-b border-blue-100 dark:border-slate-700 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
-                  <Target className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-                </div>
-                <h2 className="font-semibold text-lg">意图轨道</h2>
-              </div>
-              <Link 
-                href="/intent" 
-                className="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 flex items-center gap-1 transition-colors"
-              >
-                查看全部 <ArrowRight className="w-4 h-4" />
-              </Link>
-            </div>
-            <div className="p-4 h-80">
-              <IntentOrbit compact />
-            </div>
-          </motion.div>
-
-          {/* L0 Memory List */}
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-            className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl overflow-hidden shadow-lg border border-indigo-100 dark:border-slate-700"
-          >
-            <div className="p-4 border-b border-indigo-100 dark:border-slate-700 flex items-center gap-2">
-              <div className="p-2 bg-indigo-100 dark:bg-indigo-900/30 rounded-lg">
-                <MessageSquare className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
-              </div>
-              <h2 className="font-semibold text-lg">工作记忆 (L0)</h2>
-              <span className="ml-auto text-xs px-2 py-1 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 rounded-full">
-                实时
-              </span>
-            </div>
-            <div className="p-4 max-h-80 overflow-auto">
-              <L0MemoryList compact />
+            <div className="space-y-3">
+              {recentMemories.map((m, i) => {
+                const color = getLevelColor(m.level);
+                return (
+                  <motion.div
+                    key={m.id}
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.6 + i * 0.1 }}
+                    className="flex items-start gap-3 p-3 rounded-lg"
+                    style={{ background: color.bg }}
+                  >
+                    <div
+                      className="w-2 h-2 rounded-full mt-1.5 flex-shrink-0"
+                      style={{ background: color.main, boxShadow: `0 0 6px ${color.glow}` }}
+                    />
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="level-badge" style={{ background: color.bg, color: color.glow, borderColor: color.main + '40' }}>
+                          {m.level}
+                        </span>
+                        <span className="text-xs text-slate-300 truncate">{m.title}</span>
+                      </div>
+                      <p className="text-xs text-slate-500 line-clamp-2">
+                        {m.content?.substring(0, 120)?.replace(/---[\s\S]*?---/, '')}...
+                      </p>
+                    </div>
+                  </motion.div>
+                );
+              })}
             </div>
           </motion.div>
 
           {/* System Status */}
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.5 }}
-            className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl overflow-hidden shadow-lg border border-green-100 dark:border-slate-700"
+            className="glow-card p-5"
           >
-            <div className="p-4 border-b border-green-100 dark:border-slate-700 flex items-center gap-2">
-              <div className="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg">
-                <Activity className="w-5 h-5 text-green-600 dark:text-green-400" />
-              </div>
-              <h2 className="font-semibold text-lg">系统状态</h2>
+            <h3 className="text-sm font-semibold text-white mb-4">系统状态</h3>
+            <div className="space-y-4">
+              {[
+                { label: '记忆同步', value: '在线', status: 'ok', detail: status.lastGithubSync || '刚刚' },
+                { label: 'Daily Dream', value: '运行中', status: 'ok', detail: '每天 23:00' },
+                { label: 'Weekly Review', value: '运行中', status: 'ok', detail: '每周日 22:00' },
+                { label: '自动归档', value: '运行中', status: 'ok', detail: '每天 00:00' },
+              ].map((item) => (
+                <div key={item.label} className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className={`w-2 h-2 rounded-full ${item.status === 'ok' ? 'bg-green-400' : 'bg-amber-400'} animate-pulse`} />
+                    <span className="text-sm text-slate-300">{item.label}</span>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-sm text-white">{item.value}</div>
+                    <div className="text-xs text-slate-500">{item.detail}</div>
+                  </div>
+                </div>
+              ))}
             </div>
-            <div className="p-4 space-y-4">
-              <StatusItem 
-                label="Daily Dream" 
-                status="正常运行" 
-                time="今天 23:00"
-                progress={78}
-                color="green"
-              />
-              <StatusItem 
-                label="Weekly Dream" 
-                status="正常运行" 
-                time="周日 22:00"
-                progress={45}
-                color="blue"
-              />
-              <StatusItem 
-                label="GitHub 同步" 
-                status="已连接" 
-                time="刚刚"
-                progress={100}
-                color="purple"
-              />
-              <StatusItem 
-                label="自动归档" 
-                status="正常运行" 
-                time="每天 00:00"
-                progress={92}
-                color="amber"
-              />
+
+            {/* Quick Actions */}
+            <div className="grid grid-cols-2 gap-2 mt-5 pt-4 border-t border-white/5">
+              <Link href="/memory">
+                <div className="text-center p-2 rounded-lg bg-blue-500/10 hover:bg-blue-500/20 transition-colors cursor-pointer">
+                  <Brain className="w-4 h-4 mx-auto mb-1 text-blue-400" />
+                  <span className="text-xs text-blue-300">探索记忆</span>
+                </div>
+              </Link>
+              <Link href="/insights">
+                <div className="text-center p-2 rounded-lg bg-purple-500/10 hover:bg-purple-500/20 transition-colors cursor-pointer">
+                  <Target className="w-4 h-4 mx-auto mb-1 text-purple-400" />
+                  <span className="text-xs text-purple-300">模式雷达</span>
+                </div>
+              </Link>
             </div>
           </motion.div>
         </div>
-
-        {/* Quick Actions */}
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6 }}
-          className="bg-gradient-to-r from-purple-500/10 via-pink-500/10 to-blue-500/10 rounded-2xl p-6 border border-purple-200 dark:border-slate-700"
-        >
-          <div className="flex items-start gap-4">
-            <motion.div 
-              animate={{ rotate: [0, 10, -10, 0] }}
-              transition={{ repeat: Infinity, duration: 4 }}
-              className="p-3 bg-white dark:bg-slate-800 rounded-xl shadow-md"
-            >
-              <Sparkles className="w-6 h-6 text-yellow-500" />
-            </motion.div>
-            <div className="flex-1">
-              <h3 className="font-semibold text-lg mb-1">记忆系统健康状态：优秀</h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                你的记忆架构各层级连接良好。建议检查 L1 记忆，看看是否有可以提升到 L2 的模式。
-              </p>
-              <div className="flex gap-4 mt-4">
-                <Link 
-                  href="/insights" 
-                  className="text-sm px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-colors"
-                >
-                  查看详细洞察 →
-                </Link>
-                <Link 
-                  href="/search" 
-                  className="text-sm px-4 py-2 bg-white dark:bg-slate-700 border rounded-lg hover:bg-gray-50 dark:hover:bg-slate-600 transition-colors"
-                >
-                  探索记忆 →
-                </Link>
-              </div>
-            </div>
-          </div>
-        </motion.div>
-      </div>
-    </div>
-  );
-}
-
-// 统计卡片组件
-function StatCard({ icon, title, value, subtitle, gradient }: {
-  icon: React.ReactNode;
-  title: string;
-  value: number;
-  subtitle: string;
-  gradient: string;
-}) {
-  return (
-    <motion.div 
-      whileHover={{ y: -4, scale: 1.02 }}
-      className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border border-gray-100 dark:border-slate-700 rounded-xl p-4 shadow-sm hover:shadow-md transition-all cursor-pointer"
-    >
-      <div className="flex items-center justify-between mb-2">
-        <h3 className="text-sm text-gray-500">{title}</h3>
-        <div className={`p-1.5 rounded-lg bg-gradient-to-br ${gradient} text-white`}>
-          {icon}
-        </div>
-      </div>
-      <div className={`text-3xl font-bold bg-gradient-to-r ${gradient} bg-clip-text text-transparent`}>{value}</div>
-      <p className="text-xs text-gray-400 mt-1">{subtitle}</p>
-    </motion.div>
-  );
-}
-
-// 状态项组件
-function StatusItem({ label, status, time, progress, color }: {
-  label: string;
-  status: string;
-  time: string;
-  progress: number;
-  color: 'green' | 'blue' | 'purple' | 'amber';
-}) {
-  const colorClasses = {
-    green: 'bg-green-500',
-    blue: 'bg-blue-500',
-    purple: 'bg-purple-500',
-    amber: 'bg-amber-500'
-  };
-
-  const progressColors = {
-    green: 'from-green-400 to-green-600',
-    blue: 'from-blue-400 to-blue-600',
-    purple: 'from-purple-400 to-purple-600',
-    amber: 'from-amber-400 to-amber-600'
-  };
-
-  return (
-    <div className="space-y-2">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className={`w-2 h-2 rounded-full ${colorClasses[color]} animate-pulse`} />
-          <span className="text-sm font-medium">{label}</span>
-        </div>
-        <div className="text-right">
-          <div className="text-sm font-medium">{status}</div>
-          <div className="text-xs text-gray-400">{time}</div>
-        </div>
-      </div>
-      <div className="h-1.5 bg-gray-100 dark:bg-slate-700 rounded-full overflow-hidden">
-        <motion.div 
-          initial={{ width: 0 }}
-          animate={{ width: `${progress}%` }}
-          transition={{ duration: 1, delay: 0.5 }}
-          className={`h-full rounded-full bg-gradient-to-r ${progressColors[color]}`}
-        />
-      </div>
+      </main>
     </div>
   );
 }

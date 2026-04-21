@@ -2,225 +2,187 @@
 
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { useLanguage } from '@/components/language-provider';
-import { 
-  Activity, 
-  Clock, 
-  MessageSquare, 
-  RefreshCw,
-  AlertCircle,
-  Loader2,
-  Database,
-  Zap
-} from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
+import { ParticleBackground } from '@/components/particle-bg';
+import { NavBar } from '@/components/nav-bar';
+import { Activity, MessageSquare, Clock, Zap, RefreshCw } from 'lucide-react';
+
+interface L0Message {
+  id: string;
+  role: 'user' | 'assistant';
+  content: string;
+  timestamp: string;
+}
 
 interface L0Session {
   id: string;
-  type: 'L0';
-  title: string;
-  content: string;
   sessionId: string;
-  timestamp: number;
   messageCount: number;
   preview: string;
-  channel: string;
-  userName: string;
+  timestamp: number;
 }
 
-export default function L0Page() {
-  const { t } = useLanguage();
-  const [memories, setMemories] = useState<L0Session[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+export default function L0StreamPage() {
+  const [messages, setMessages] = useState<L0Message[]>([]);
+  const [sessions, setSessions] = useState<L0Session[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedSession, setSelectedSession] = useState<string | null>(null);
 
-  const fetchL0Memories = async () => {
-    setIsLoading(true);
-    setError(null);
-    
-    try {
-      const response = await fetch('/api/l0-memories');
-      if (!response.ok) throw new Error('Failed to fetch');
-      
-      const data = await response.json();
-      setMemories(data.memories || []);
-      setLastUpdated(new Date());
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Unknown error');
-    } finally {
-      setIsLoading(false);
-    }
+  const fetchData = () => {
+    setLoading(true);
+    fetch('/api/l0-memories')
+      .then(r => r.json())
+      .then(d => {
+        setMessages(d.messages || []);
+        setSessions(d.memories || []);
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
   };
 
   useEffect(() => {
-    fetchL0Memories();
-    
-    // 每30秒自动刷新
-    const interval = setInterval(fetchL0Memories, 30000);
-    return () => clearInterval(interval);
+    fetchData();
   }, []);
 
-  const formatTime = (timestamp: number) => {
-    return new Date(timestamp).toLocaleString('zh-CN', {
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
+  const filteredMessages = selectedSession
+    ? messages.filter(m => m.id.startsWith(selectedSession))
+    : messages.slice(-50); // 只显示最近50条
+
+  const formatTime = (ts: string | number) => {
+    const d = new Date(ts);
+    return d.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
   };
 
-  const totalMessages = memories.reduce((sum, m) => sum + m.messageCount, 0);
-
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <motion.div 
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="flex items-center justify-between"
-      >
-        <div className="flex items-center gap-3">
-          <Activity className="w-8 h-8 text-blue-500" />
-          <div>
-            <h1 className="text-2xl font-bold">{t('l0.title')}</h1>
-            <p className="text-sm text-muted-foreground">{t('l0.subtitle')}</p>
+    <div className="min-h-screen relative">
+      <ParticleBackground />
+      <NavBar />
+
+      <main className="relative z-10 max-w-5xl mx-auto px-4 py-8 pb-32">
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mb-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl font-bold text-white mb-1 flex items-center gap-2">
+                <Zap className="w-6 h-6 text-blue-400 animate-pulse" />
+                L0 工作记忆
+              </h1>
+              <p className="text-sm text-slate-400">
+                {messages.length} 条实时消息 · {sessions.length} 个会话 · 最近 50 条
+              </p>
+            </div>
+            <button
+              onClick={fetchData}
+              className="p-2 rounded-lg bg-blue-500/20 hover:bg-blue-500/30 transition-colors"
+            >
+              <RefreshCw className="w-4 h-4 text-blue-400" />
+            </button>
           </div>
-        </div>
-        <Button 
-          variant="outline" 
-          onClick={fetchL0Memories}
-          disabled={isLoading}
-        >
-          <RefreshCw className={cn("w-4 h-4 mr-2", isLoading && "animate-spin")} />
-          {t('common.refresh') || 'Refresh'}
-        </Button>
-      </motion.div>
+        </motion.div>
 
-      {/* Stats Overview */}
-      <motion.div 
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1 }}
-        className="grid grid-cols-1 md:grid-cols-3 gap-4"
-      >
-        <div className="bg-card border rounded-lg p-4">
-          <div className="flex items-center gap-2 text-muted-foreground mb-1">
-            <MessageSquare className="w-4 h-4" />
-            <span className="text-xs">{t('l0.today')}</span>
-          </div>
-          <p className="text-2xl font-bold text-blue-500">{totalMessages}</p>
-          <p className="text-xs text-muted-foreground mt-1">{t('l0.messages')}</p>
-        </div>
-        
-        <div className="bg-card border rounded-lg p-4">
-          <div className="flex items-center gap-2 text-muted-foreground mb-1">
-            <Database className="w-4 h-4" />
-            <span className="text-xs">{t('l0.realtime')}</span>
-          </div>
-          <p className="text-2xl font-bold">{memories.length}</p>
-          <p className="text-xs text-muted-foreground mt-1">{t('l0.sessions')}</p>
-        </div>
-        
-        <div className="bg-card border rounded-lg p-4">
-          <div className="flex items-center gap-2 text-muted-foreground mb-1">
-            <Clock className="w-4 h-4" />
-            <span className="text-xs">{t('l0.lastUpdated')}</span>
-          </div>
-          <p className="text-2xl font-bold">
-            {lastUpdated ? formatTime(lastUpdated.getTime()) : '--'}
-          </p>
-          <p className="text-xs text-muted-foreground mt-1">
-            {memories.length > 0 ? t('common.live') || 'Live' : t('common.pending') || 'Pending'}
-          </p>
-        </div>
-      </motion.div>
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+          {/* Sessions Sidebar */}
+          <div className="lg:col-span-1">
+            <div className="glow-card p-4">
+              <h3 className="text-xs font-semibold text-slate-400 mb-3 flex items-center gap-1">
+                <Activity className="w-3 h-3" />
+                会话列表
+              </h3>
+              <div className="space-y-2">
+                <button
+                  onClick={() => setSelectedSession(null)}
+                  className={`w-full text-left p-2 rounded-lg text-xs transition-all ${
+                    selectedSession === null
+                      ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30'
+                      : 'text-slate-400 hover:bg-white/5'
+                  }`}
+                >
+                  全部会话 ({messages.length})
+                </button>
 
-      {/* Info Card */}
-      <motion.div 
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2 }}
-        className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-4"
-      >
-        <div className="flex items-start gap-3">
-          <Zap className="w-5 h-5 text-blue-500 mt-0.5" />
-          <div>
-            <h3 className="font-medium text-blue-400 mb-1">{t('l0.whatIs')}</h3>
-            <p className="text-sm text-muted-foreground">{t('l0.explanation')}</p>
-          </div>
-        </div>
-      </motion.div>
-
-      {/* Error State */}
-      {error && (
-        <div className="flex items-center gap-2 p-4 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400">
-          <AlertCircle className="w-5 h-5" />
-          <span>{error}</span>
-        </div>
-      )}
-
-      {/* Loading State */}
-      {isLoading && memories.length === 0 && (
-        <div className="flex flex-col items-center gap-4 py-12 text-muted-foreground">
-          <Loader2 className="w-8 h-8 animate-spin" />
-          <span>{t('common.loading')}</span>
-        </div>
-      )}
-
-      {/* Empty State */}
-      {!isLoading && memories.length === 0 && !error && (
-        <div className="flex flex-col items-center gap-4 py-12 text-muted-foreground">
-          <Activity className="w-16 h-16 opacity-30" />
-          <p className="text-lg font-medium">{t('l0.noData')}</p>
-          <p className="text-sm">{t('l0.checkBack')}</p>
-        </div>
-      )}
-
-      {/* L0 Sessions List */}
-      <div className="space-y-3">
-        {memories.map((memory, index) => (
-          <motion.div
-            key={memory.id}
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: index * 0.05 }}
-            className="bg-card border rounded-lg p-4 hover:border-blue-500/50 transition-colors"
-          >
-            <div className="flex items-start justify-between">
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="px-2 py-0.5 bg-blue-500/20 text-blue-400 text-xs rounded">
-                    L0
-                  </span>
-                  <span className="text-sm text-muted-foreground">
-                    {memory.channel}
-                  </span>
-                  <span className="text-xs text-muted-foreground">
-                    {formatTime(memory.timestamp)}
-                  </span>
-                </div>
-                
-                <h3 className="font-medium mb-1">{memory.title}</h3>
-                <p className="text-sm text-muted-foreground line-clamp-2">
-                  {memory.preview}
-                </p>
-                
-                <div className="flex items-center gap-4 mt-3 text-xs text-muted-foreground">
-                  <span className="flex items-center gap-1">
-                    <MessageSquare className="w-3 h-3" />
-                    {memory.messageCount} messages
-                  </span>
-                  <span className="font-mono text-xs opacity-50">
-                    {memory.sessionId.slice(0, 8)}...
-                  </span>
-                </div>
+                {sessions.map((session) => {
+                  const isActive = selectedSession === session.sessionId;
+                  return (
+                    <button
+                      key={session.id}
+                      onClick={() => setSelectedSession(isActive ? null : session.sessionId)}
+                      className={`w-full text-left p-2 rounded-lg text-xs transition-all ${
+                        isActive
+                          ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30'
+                          : 'text-slate-400 hover:bg-white/5'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="font-medium truncate">{session.sessionId}</span>
+                        <span className="text-[10px] text-slate-500">{session.messageCount}</span>
+                      </div>
+                      <p className="text-[10px] text-slate-600 truncate">{session.preview}</p>
+                    </button>
+                  );
+                })}
               </div>
             </div>
-          </motion.div>
-        ))}
-      </div>
+          </div>
+
+          {/* Messages Stream */}
+          <div className="lg:col-span-3">
+            <div className="glow-card p-4" style={{ minHeight: 500 }}>
+              {loading ? (
+                <div className="flex items-center justify-center h-64">
+                  <div className="w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+                </div>
+              ) : (
+                <div className="space-y-3 max-h-[600px] overflow-y-auto pr-2">
+                  {filteredMessages.map((msg, i) => {
+                    const isUser = msg.role === 'user';
+                    return (
+                      <motion.div
+                        key={msg.id}
+                        initial={{ opacity: 0, x: isUser ? 20 : -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: i * 0.02 }}
+                        className={`flex ${isUser ? 'justify-end' : 'justify-start'}`}
+                      >
+                        <div
+                          className={`max-w-[80%] p-3 rounded-lg ${
+                            isUser
+                              ? 'bg-blue-500/20 border border-blue-500/20'
+                              : 'bg-white/5 border border-white/5'
+                          }`}
+                        >
+                          <div className="flex items-center gap-2 mb-1">
+                            <span
+                              className={`text-[10px] px-1.5 py-0.5 rounded ${
+                                isUser
+                                  ? 'bg-blue-500/30 text-blue-300'
+                                  : 'bg-purple-500/30 text-purple-300'
+                              }`}
+                            >
+                              {isUser ? 'User' : 'AI'}
+                            </span>
+                            <span className="text-[10px] text-slate-600 flex items-center gap-1">
+                              <Clock className="w-2.5 h-2.5" />
+                              {formatTime(msg.timestamp)}
+                            </span>
+                          </div>
+                          <p className="text-xs text-slate-300 leading-relaxed">
+                            {msg.content}
+                          </p>
+                        </div>
+                      </motion.div>
+                    );
+                  })}
+
+                  {filteredMessages.length === 0 && (
+                    <div className="text-center py-12 text-slate-500">
+                      <MessageSquare className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                      <p className="text-xs">暂无消息</p>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </main>
     </div>
   );
 }
