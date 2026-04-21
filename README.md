@@ -1,14 +1,14 @@
-# Memory Galaxy 🌌
+# MemCanvas 🌌
 
 Bruce 的记忆可视化界面 —— 将 5 层记忆架构转化为交互式神经星系。
 
-> **数据来自 memory-core**：实时读取记忆系统的数据，构建可视化体验。
+> **数据来自 Mem-Vault**：实时读取记忆系统的数据，构建可视化体验。
 
 ---
 
 ## 在线访问
 
-**https://ananasyang.github.io/memory-galaxy/**
+**https://ananasyang.github.io/Mem-Canvas/**
 
 ---
 
@@ -37,7 +37,7 @@ Bruce 的记忆可视化界面 —— 将 5 层记忆架构转化为交互式神
 ## 数据流
 
 ```
-memory-core (GitHub)
+Mem-Vault (GitHub)
     ↓ git clone / API
 Next.js Build (GitHub Actions)
     ↓ static export
@@ -65,8 +65,8 @@ Browser (用户)
 ## 本地开发
 
 ```bash
-git clone https://github.com/AnanasYang/memory-galaxy.git
-cd memory-galaxy
+git clone https://github.com/AnanasYang/Mem-Canvas.git
+cd Mem-Canvas
 npm install
 npm run dev
 ```
@@ -86,7 +86,7 @@ GitHub Actions 自动部署到 GitHub Pages：
 
 ## 关联项目
 
-- [**memory-core**](https://github.com/AnanasYang/memory-core) — 核心记忆系统，本系统的数据来源
+- [**Mem-Vault**](https://github.com/AnanasYang/Mem-Vault) — 核心记忆系统，本系统的数据来源
 
 ---
 
